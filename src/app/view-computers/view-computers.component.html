@@ -1,0 +1,81 @@
+<div style="margin-left: 89.50%">
+  <button nz-button nzType="primary" (click)="showModal()">Add Computer</button>
+  <div style="margin-top: 5%"></div>
+</div>
+
+<nz-table #Table [nzData]="computers" [nzBordered]="true">
+  <thead>
+  <tr>
+    <th *ngFor="let column of computerColumns">{{column}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of Table.data">
+    <td>{{data.computerName}}</td>
+    <td>{{data.brandName}}</td>
+    <td>{{data.serialNumber}}</td>
+    <td>{{data.computerLab.computerLabName}}</td>
+    <td>
+      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <nz-divider nzType="vertical"></nz-divider>
+      <button (click)="showConfirm(data)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Details" (nzOnCancel)="handleCancelEdit()" [nzOkText]="'Save'" (nzOnOk)="showConfirmEdit()">
+  <div class="example-container">
+    <ng-container *nzModalContent>
+      <form [formGroup]="editComputerFormGroup">
+        <div>
+          <label>Computer Name</label>
+          <input readonly type="text" class="form-control" formControlName="computerName" [(ngModel)]="selectedComputer.computerName">
+        </div>
+        <div>
+          <label>Computer Lab</label>
+          <select formControlName="computerLabName" class="form-control">
+            <option [(ngModel)]="selectedComputer.computerLab.computerLabName"></option>
+            <option *ngFor="let lab of computerLabs">{{lab.computerLabName}}</option>
+          </select>
+        </div>
+        <div>
+          <label>Brand Name</label>
+          <input type="text" class="form-control" formControlName="brandName" [(ngModel)]="selectedComputer.brandName">
+        </div>
+        <div>
+          <label>Serial Number</label>
+          <input type="text" class="form-control" formControlName="serialNum" [(ngModel)]="selectedComputer.serialNumber">
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer" (nzOnCancel)="handleCancelAdd()" [nzOkText]="'Save'" (nzOnOk)="addComputer()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <div>
+        <form [formGroup]="addComputerFormGroup">
+          <div>
+            <label>Brand Name</label>
+            <input type="text" class="form-control" formControlName="brandName">
+          </div>
+          <div>
+            <label>Serial Number</label>
+            <input type="text" class="form-control" formControlName="serialNum">
+          </div>
+          <div>
+            <label>Computer Lab</label>
+            <select class="form-control" formControlName="computerLabName">
+              <option *ngFor="let lab of computerLabs">{{lab.computerLabName}}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>
+
+
+

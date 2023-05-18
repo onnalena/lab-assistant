@@ -1,0 +1,182 @@
+<div style="margin-left: 92.50%">
+  <button nz-button nzType="primary" (click)="showAddModal()">Add User</button>
+  <div style="margin-top: 5%"></div>
+</div>
+
+<nz-table #Table [nzData]="users" [nzBordered]="true">
+  <thead>
+  <tr>
+    <th *ngFor="let column of userColumns">{{column}}
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let element of Table.data">
+    <td>{{element.idnumber}}</td>
+    <td>{{element.firstname}}</td>
+    <td>{{element.lastname}}</td>
+    <td>{{element.userContacts[0].contact}}</td>
+    <td>{{element.userContacts[1].contact}}</td>
+    <td *ngIf="element.userContacts[0].status === 'PRIMARY'">{{element.userContacts[0].contactPreference}}</td>
+    <td *ngIf="element.userContacts[1].status === 'PRIMARY'">{{element.userContacts[1].contactPreference}}</td>
+    <td>{{element.status}}</td>
+    <td>{{element.userType}}</td>
+    <td>
+      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <nz-divider nzType="vertical"></nz-divider>
+      <button (click)="showConfirmDelete(element)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+    </td>
+    <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit User" [nzOkText]="'Save Changes'" (nzOnOk)="showConfirmEdit()"
+              (nzOnCancel)="handleCancelEdit()">
+      <ng-container *nzModalContent>
+        <div class="example-container">
+          <div>
+            <form [formGroup]="editProfileFormGroup">
+              <div>
+                <label>Email Address</label>
+                <input matInput type="email" class="form-control" formControlName="email" required
+                       [ngClass]="{'is-invalid': formControlE['email'].touched && formControlE['email'].errors}"
+                       *ngIf="element.userContacts[0].contactPreference === 'EMAIL'" [(ngModel)]="element.userContacts[0].contact">
+                <input matInput type="email" class="form-control" formControlName="email" required
+                       [ngClass]="{'is-invalid': formControlE['email'].touched && formControlE['email'].errors}"
+                       *ngIf="element.userContacts[1].contactPreference === 'EMAIL'" [(ngModel)]="element.userContacts[1].contact">
+                <div *ngIf="formControlE['email'].errors" class="invalid-feedback">
+                  <div *ngIf="formControlE['email'].errors['email']">Please enter a valid email address!</div>
+                  <div *ngIf="formControlE['email'].errors['required']">Email address is required!</div>
+                </div>
+              </div>
+              <div>
+                <label>Cellphone Number</label>
+                <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
+                       [ngClass]="{'is-invalid': formControlE['cellPhoneNumber'].touched && formControlE['cellPhoneNumber'].errors}"
+                       *ngIf="element.userContacts[0].contactPreference === 'SMS'" [(ngModel)]="element.userContacts[0].contact">
+                <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
+                       [ngClass]="{'is-invalid': formControlE['cellPhoneNumber'].touched && formControlE['cellPhoneNumber'].errors}"
+                       *ngIf="element.userContacts[1].contactPreference === 'SMS'" [(ngModel)]="element.userContacts[1].contact">
+                <div *ngIf="formControlE['cellPhoneNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="formControlE['cellPhoneNumber'].errors['pattern']">Cellphone Number must only contain digits!</div>
+                  <div *ngIf="formControlE['cellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+                  <div *ngIf="formControlE['cellPhoneNumber'].errors['minlength'] || formControlE['cellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+                </div>
+              </div>
+              <div>
+                <label>Primary Contact</label>
+                <div *ngIf="element.userContacts[0].status === 'PRIMARY'">
+                  <select formControlName="primaryContact" class="form-control">
+                    <option  [ngValue]="element.userContacts[1].contactPreference">{{element.userContacts[1].contactPreference}}</option>
+                    <option>{{element.userContacts[0].contactPreference}}</option>
+                  </select>
+                </div>
+                <div *ngIf="element.userContacts[1].status === 'PRIMARY'">
+                  <select formControlName="primaryContact" class="form-control">
+                    <option  [ngValue]="element.userContacts[0].contactPreference">{{element.userContacts[0].contactPreference}}</option>
+                    <option>{{element.userContacts[1].contactPreference}}</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </ng-container>
+    </nz-modal>
+  </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add User" [nzOkText]="'Save'" (nzOnOk)="regAdminUser()" (nzOnCancel)="handleCancelAdd()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="userRegistrationFormGroup">
+        <div>
+          <label>Identity Number</label>
+          <input type="text" class="form-control" formControlName="IDNumber" required
+                 [ngClass]="{'is-invalid' : formControl['IDNumber'].touched && formControl['IDNumber'].errors}">
+          <div *ngIf="formControl['IDNumber'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['IDNumber'].errors['required']">Student Number is required!</div>
+            <div *ngIf="formControl['IDNumber'].errors['pattern']">Student Number contains characters!</div>
+            <div *ngIf="formControl['IDNumber'].errors['maxlength']">Student Number should contain 10 digits!</div>
+          </div>
+        </div>
+        <div>
+          <label>First Name</label>
+          <input type="text" class="form-control" formControlName="firstname" required
+                 [ngClass]="{'is-invalid': formControl['firstname'].touched && formControl['firstname'].errors}">
+          <div *ngIf="formControl['firstname'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['firstname'].errors['required']">First name is required!</div>
+            <div *ngIf="formControl['firstname'].errors['pattern']">First Name contains a digit!</div>
+            <div *ngIf="formControl['firstname'].errors['maxlength']">First Name is too long!</div>
+            <div *ngIf="formControl['firstname'].errors['minlength']">First Name too short!</div>
+          </div>
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input type="text" class="form-control" formControlName="lastname" required
+                 [ngClass]="{'is-invalid':formControl['lastname'].touched && formControl['lastname'].errors}">
+          <div *ngIf="formControl['lastname'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['lastname'].errors['required']">Last name is required!</div>
+            <div *ngIf="formControl['lastname'].errors['pattern']">Last Name contains a digit!</div>
+            <div *ngIf="formControl['lastname'].errors['maxlength']">Last Name is too long!</div>
+            <div *ngIf="formControl['lastname'].errors['minlength']">Last Name too short!</div>
+          </div>
+        </div>
+        <div>
+          <label>Email Address</label>
+          <input matInput type="email" class="form-control" formControlName="email" required
+                 [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}">
+          <div *ngIf="formControl['email'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['email'].errors['email']">Please enter a valid email address!</div>
+            <div *ngIf="formControl['email'].errors['required']">Email address is required!</div>
+          </div>
+        </div>
+        <div>
+          <label>Cellphone Number</label>
+          <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
+                 [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}">
+          <div *ngIf="formControl['cellPhoneNumber'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['cellPhoneNumber'].errors['pattern']">Cellphone Number must only contain digits!</div>
+            <div *ngIf="formControl['cellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+            <div *ngIf="formControl['cellPhoneNumber'].errors['minlength'] ||
+         formControl['cellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+          </div>
+        </div>
+        <div>
+          <label>Primary Contact</label>
+          <select formControlName="primaryContact" class="form-control" required
+                  [ngClass]="{'is-invalid': formControl['primaryContact'].touched && formControl['primaryContact'].errors}">
+            <option value="">Select primary contact</option>
+            <option *ngFor="let contact of primaryContactOption" [ngValue]="contact">{{contact}}</option>
+          </select>
+        </div>
+        <div>
+          <label>User Type</label>
+          <select formControlName="userType" class="form-control" required
+                  [ngClass]="{'is-invalid': formControl['userType'].touched && formControl['userType'].errors}">
+            <option value="">Select type</option>
+            <option *ngFor="let type of userTypeOptions" [ngValue]="type">{{type}}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isOTPVisible" nzTitle="Enter One Time Pin" (nzOnCancel)="handleCancelOTP()" (nzOnOk)="otpSubmit()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="oneTimePinFormGroup">
+        <div>
+          <label class="label-otp">One Time Pin</label>
+          <input type="text" class="form-control" formControlName="oneTimePin" required
+                 [ngClass]="{'is-invalid': formControlO['oneTimePin'].touched &&
+               formControlO['oneTimePin'].errors}">
+          <div *ngIf="formControlO['oneTimePin'].errors" class="invalid-feedback">
+            <div *ngIf="formControlO['oneTimePin'].errors['required']">OTP is required!</div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+
+
+

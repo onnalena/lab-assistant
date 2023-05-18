@@ -1,0 +1,15 @@
+.top-right-corner {
+
+  top: 25px;
+  right: 25px;
+}
+
+mat-cell, mat-header-cell {
+  padding-right: 35px;
+}
+
+.top-right-corner {
+  margin-left: 90%;
+}
+
+

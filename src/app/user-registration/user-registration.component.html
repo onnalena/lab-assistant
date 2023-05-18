@@ -1,0 +1,148 @@
+<div *ngIf="!isFormValid">
+  <div class="top-right-corner">
+    <button nz-button nzType="primary" nzBlock (click)="goToLogin()">Sign In</button>
+  </div>
+
+  <div class="example-container">
+    <div class="form-container">
+      <form nz-form [formGroup]="userRegistrationFormGroup">
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="user">
+                <input type="text" nz-input placeholder="Identity Number" class="form-control" formControlName="IDNumber" required
+                       [ngClass]="{'is-invalid' : formControl['IDNumber'].touched && formControl['IDNumber'].errors}">
+                <div *ngIf="formControl['IDNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['IDNumber'].errors['required']">Student Number is required!</div>
+                  <div *ngIf="formControl['IDNumber'].errors['pattern']">Student Number contains characters!</div>
+                  <div *ngIf="formControl['IDNumber'].errors['maxlength']">Student Number should contain 10 digits!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="user">
+                <input type="text" nz-input placeholder="First Name" class="form-control" formControlName="firstname" required
+                       [ngClass]="{'is-invalid': formControl['firstname'].touched && formControl['firstname'].errors}">
+                <div *ngIf="formControl['firstname'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['firstname'].errors['required']">First name is required!</div>
+                  <div *ngIf="formControl['firstname'].errors['pattern']">First Name contains a digit!</div>
+                  <div *ngIf="formControl['firstname'].errors['maxlength']">First Name is too long!</div>
+                  <div *ngIf="formControl['firstname'].errors['minlength']">First Name too short!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="user">
+                <input type="text" nz-input placeholder="Last Name" class="form-control" formControlName="lastname" required
+                       [ngClass]="{'is-invalid':formControl['lastname'].touched && formControl['lastname'].errors}">
+                <div *ngIf="formControl['lastname'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['lastname'].errors['required']">Last name is required!</div>
+                  <div *ngIf="formControl['lastname'].errors['pattern']">Last Name contains a digit!</div>
+                  <div *ngIf="formControl['lastname'].errors['maxlength']">Last Name is too long!</div>
+                  <div *ngIf="formControl['lastname'].errors['minlength']">Last Name too short!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="email">
+                <input matInput type="email" nz-input placeholder="Email Address" class="form-control" formControlName="email" required
+                       [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}">
+                <div *ngIf="formControl['email'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['email'].errors['email']">Please enter a valid email address!</div>
+                  <div *ngIf="formControl['email'].errors['required']">Email address is required!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="phone">
+                <input matInput type="text" nz-input placeholder="Cellphone Number" class="form-control" formControlName="cellPhoneNumber" required
+                       [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}">
+                <div *ngIf="formControl['cellPhoneNumber'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['cellPhoneNumber'].errors['pattern']">Cellphone Number must only contain digits!</div>
+                  <div *ngIf="formControl['cellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+                  <div *ngIf="formControl['cellPhoneNumber'].errors['minlength'] ||
+         formControl['cellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="lock">
+                <input matInput type="password" nz-input placeholder="Password" class="form-control" formControlName="password" required
+                       [ngClass]="{'is-invalid': formControl['password'].touched && formControl['password'].errors}">
+                <div *ngIf="formControl['password'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['password'].errors['pattern']">Password must contain characters and digits!</div>
+                  <div *ngIf="formControl['password'].errors['required']">Password is required!</div>
+                  <div *ngIf="formControl['password'].errors['maxlength']">Password is too long!</div>
+                  <div *ngIf="formControl['password'].errors['minlength']">Password is too short!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-input-group nzPrefixIcon="lock">
+                <input matInput type="Confirm Password" nz-input placeholder="Confirm Password" class="form-control" formControlName="confirmPassword" required
+                       [ngClass]="{'is-invalid': formControl['confirmPassword'].touched && formControl['confirmPassword'].errors}">
+                <div *ngIf="formControl['confirmPassword'].errors" class="invalid-feedback">
+                  <div *ngIf="formControl['confirmPassword'].errors['required']">Confirm Password is required!</div>
+                  <div *ngIf="formControl['confirmPassword'].errors['matching']">Passwords don't match!</div>
+                </div>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div class="form-group">
+          <select formControlName="primaryContact" class="form-control">
+            <option value="">Choose Primary Contact</option>
+            <option *ngFor="let contact of primaryContactOption" [ngValue]="contact">{{contact}}</option>
+          </select>
+        </div>
+        <button nz-button nzType="primary" nzBlock (click)="onSubmit()">Register</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<nz-modal [(nzVisible)]="isOTPVisible" nzTitle="Verify Contact" [nzOkText]="'Verify OTP'"
+          (nzOnCancel)="handleCancelOTP()" (nzOnOk)="otpSubmit()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="oneTimePinFormGroup">
+        <label class="label-otp">Please enter the One Time Pin: </label>
+        <input type="text" class="form-control" formControlName="oneTimePin" required
+               [ngClass]="{'is-invalid': formControlO['oneTimePin'].touched &&
+               formControlO['oneTimePin'].errors}">
+        <div *ngIf="formControlO['oneTimePin'].errors" class="invalid-feedback">
+          <div *ngIf="formControlO['oneTimePin'].errors['required']">OTP is required!</div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+<app-layout *ngIf="isFormValid" [loggedInUser]="userRegistration"></app-layout>
+
+
+
+

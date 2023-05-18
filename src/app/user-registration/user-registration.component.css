@@ -1,0 +1,20 @@
+.example-container{
+  text-align: center
+}
+label{
+  font-weight: bold;
+  text-align: left;
+  float: left;
+}
+.form-container{
+  width: 400px;
+  margin: 100px auto auto;
+}
+
+button{
+  margin: 20px auto auto;
+}
+
+.top-right-corner {
+  margin-left: 90%;
+}

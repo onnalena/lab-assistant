@@ -1,0 +1,27 @@
+.total-pcs {
+  background: red;
+  border-radius: 25px;
+  color: black;
+  text-align: center;
+  width: 60px;
+}
+
+.available-pcs {
+  background-color: mediumseagreen;
+  border-radius: 25px;
+}
+
+.booked-pcs {
+  background-color: indianred;
+  border-radius: 25px;
+}
+
+.stat {
+  font-size: 12px;
+  align-content: center;
+}
+label{
+  font-weight: bold;
+  text-align: left;
+  float: left;
+}

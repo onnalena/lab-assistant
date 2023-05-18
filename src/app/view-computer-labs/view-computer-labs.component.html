@@ -1,0 +1,95 @@
+<div style="margin-left: 87.50%">
+  <button nz-button nzType="primary" (click)="showAddModal()">Add Computer Lab</button>
+  <div style="margin-top: 5%"></div>
+</div>
+
+<nz-table #Table [nzData]="computerLabs" [nzBordered]="true">
+  <thead>
+  <tr>
+    <th *ngFor="let column of computerLabColumns">{{column}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of Table.data">
+    <td>{{data.computerLabName}}</td>
+    <td>{{data.buildingName}}</td>
+    <td>{{data.description}}</td>
+    <td>{{data.openingTime}}</td>
+    <td>{{data.closingTime}}</td>
+    <td>
+      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <nz-divider nzType="vertical"></nz-divider>
+      <button (click)="showConfirm(data.computerLabName)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+    </td>
+    <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Lab Details" [nzOkText]="'Save'"
+              (nzOnCancel)="handleCancelEdit()" (nzOnOk)="showConfirmEdit()">
+      <div class="example-container">
+        <ng-container *nzModalContent>
+          <form [formGroup]="editComputerLabFormGroup">
+            <div>
+              <label>Computer Lab</label>
+              <input readonly type="text" class="form-control" formControlName="computerLabName" [(ngModel)]="data.computerLabName">
+            </div>
+            <div>
+              <label>Building Name</label>
+              <input type="text" class="form-control" formControlName="buildingName" [(ngModel)]="data.buildingName">
+            </div>
+            <div>
+              <label>Description</label>
+              <select formControlName="description" class="form-control">
+                <option [value]="">{{data.description}}</option>
+                <option *ngFor="let desc of description">{{desc}}</option>
+              </select>
+            </div>
+            <div>
+              <label>Opening Time</label>
+              <input type="time" class="form-control" formControlName="openingTime">
+            </div>
+            <div>
+              <label>Closing Time</label>
+              <input type="time" class="form-control" formControlName="closingTime">
+            </div>
+            <div *ngIf="backendError" class="back-end-errors">
+              <div>{{error}}</div>
+            </div>
+          </form>
+        </ng-container>
+      </div>
+    </nz-modal>
+  </tr>
+  </tbody>
+</nz-table>
+<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer Lab" (nzOnCancel)="handleCancelAdd()" [nzOkText]="'Save'" (nzOnOk)="showConfirmAdd()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <div>
+        <form [formGroup]="addComputerLabFormGroup">
+          <div>
+            <label>Computer Lab Name</label>
+            <input type="text" class="form-control" formControlName="computerLabName">
+          </div>
+          <div>
+            <label>Building Name/Number</label>
+            <input type="text" class="form-control" formControlName="buildingName">
+          </div>
+          <div>
+            <label>Description</label>
+            <select formControlName="description" class="form-control">
+              <option value="">Choose description</option>
+              <option *ngFor="let desc of description">{{desc}}</option>
+            </select>
+          </div>
+          <div>
+            <label>Opening Time</label>
+            <input type="time" class="form-control" formControlName="openingTime">
+          </div>
+          <div>
+            <label>Closing Time</label>
+            <input type="time" class="form-control" formControlName="closingTime">
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>
+

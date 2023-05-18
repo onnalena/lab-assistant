@@ -1,0 +1,26 @@
+<div style="margin-top: 2%"></div>
+
+<div style="margin-top: 2%"></div>
+
+<nz-table #Table [nzData]="bookings" [nzBordered]="true">
+  <thead>
+  <tr>
+    <th nzAlign="center" *ngFor="let column of bookingColumns">
+      {{column}}
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of Table.data">
+    <td nzAlign="center">{{data.idnumber}}</td>
+    <td nzAlign="center">{{data.dateTime}}</td>
+    <td nzAlign="center">{{data.computer.computerName}}</td>
+    <td nzAlign="center">{{data.computerLabName}}</td>
+    <td nzAlign="center">{{data.status}}</td>
+    <td nzAlign="center">
+      <button (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></button>
+      <nz-divider nzType="vertical"></nz-divider>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

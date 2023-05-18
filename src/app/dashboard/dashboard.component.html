@@ -1,0 +1,96 @@
+<!--<ul *ngIf="!isLogout">-->
+<!--  <li><a (click)="goToPage('Home')" [target]="'dashboard'">Home</a></li>-->
+<!--  <li><a [target]="'view-bookings'">Bookings</a></li>-->
+<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Users')">Users</a></li>-->
+<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Computer Labs')">Computer Labs</a></li>-->
+<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Computers')">Computers</a></li>-->
+<!--  <li style="float:right"><a (click)="goToPage('Logout')">Logout</a></li>-->
+<!--  <li style="float:right"><a (click)="goToPage('Profile')">Profile</a></li>-->
+<!--</ul>-->
+
+<div style="background: #ECECEC;padding:30px;">
+  <div nz-row [nzGutter]="8">
+    <div nz-col [nzSpan]="8" *ngFor="let lab of computerLabs">
+      <nz-space nzDirection="vertical">
+        <nz-card *nzSpaceItem nzTitle="{{ lab.computerLabName }} @ {{ lab.buildingName }}">
+          <p><b>Description:</b> {{lab.description}}</p>
+          <p><b>Operating Hours:</b> {{lab.openingTime}} - {{lab.closingTime}}</p>
+          <p></p>
+          <nz-row [nzGutter]="16">
+            <nz-col [nzSpan]="6">
+              <nz-statistic [nzValue]="(lab.numberOfComputers | number)!" [nzTitle]="'Total Computers'"></nz-statistic>
+            </nz-col>
+            <nz-col [nzSpan]="6">
+              <nz-statistic [nzValue]="(lab.numberOfComputersAvailable | number: '1.0-2')!"
+                            [nzTitle]="'Available Computers'"></nz-statistic>
+            </nz-col>
+            <nz-col [nzSpan]="6">
+              <nz-statistic [nzValue]="(lab.numberOfComputersBooked | number: '1.0-2')!"
+                            [nzTitle]="'Booked Computers'"></nz-statistic>
+            </nz-col>
+          </nz-row>
+          <nz-divider></nz-divider>
+          <button nz-button nzType="primary" nzBlock (click)="showModal(lab.computerLabName)"
+                  [disabled]="validateIfLabIsAvailableForBooking(lab)">Book
+          </button>
+        </nz-card>
+      </nz-space>
+    </div>
+  </div>
+</div>
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Get Time Slots" (nzOnCancel)="handleOk()"
+          [nzOkText]="'Get Available Time Slots'"
+          (nzOnOk)="getTimeSlots(selectedLab)">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="bookingFormGroup">
+        <label>Select Booking Date</label>
+        <input type="date" class="form-control" formControlName="date"
+               [ngClass]="{'is-invalid': bookingFormGroup.controls['date'].touched && bookingFormGroup.controls['date'].errors}">
+        <div *ngIf="bookingFormGroup.controls['date'].errors" class="invalid-feedback">
+          <div *ngIf="bookingFormGroup.controls['date'].errors['required']">Please select a date!</div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isBookingVisible" nzTitle="Book Computer" (nzOnCancel)="handleCancel()" [nzOkText]="'Book'"
+          (nzOnOk)="bookComputer()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="bookingFormGroup">
+        <div class="form-group">
+          <label>Select booking time</label>
+          <select formControlName="availableTime" class="form-control" [ngClass]="{'is-invalid': bookingFormGroup.controls['availableTime'].touched &&
+               bookingFormGroup.controls['availableTime'].errors}">
+            <option [ngValue]="time" *ngFor="let time of timeSlots">{{time}}</option>
+          </select>
+          <div *ngIf=" bookingFormGroup.controls['availableTime'].touched && bookingFormGroup.controls['availableTime'].errors">
+            <div *ngIf="bookingFormGroup.controls['availableTime'].errors['required']" class="ant-form-item-explain-error">Please select a time slot!</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Primary Contact</label>
+          <div *ngIf="loggedInUser.userContacts[0].status === 'PRIMARY'">
+            <select formControlName="primaryContact" class="form-control">
+              <option
+                [ngValue]="loggedInUser.userContacts[1].contactPreference">{{loggedInUser.userContacts[1].contactPreference}}</option>
+              <option>{{loggedInUser.userContacts[0].contactPreference}}</option>
+            </select>
+          </div>
+          <div *ngIf="loggedInUser.userContacts[1].status === 'PRIMARY'">
+            <select formControlName="primaryContact" class="form-control">
+              <option
+                [ngValue]="loggedInUser.userContacts[0].contactPreference">{{loggedInUser.userContacts[0].contactPreference}}</option>
+              <option>{{loggedInUser.userContacts[1].contactPreference}}</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+
+

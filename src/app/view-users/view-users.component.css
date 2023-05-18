@@ -1,0 +1,45 @@
+.top-right-corner {
+
+  top: 25px;
+  right: 25px;
+}
+
+.example-container{
+  text-align: center
+}
+label{
+  font-weight: bold;
+  text-align: left;
+  float: left;
+}
+.card-style{
+  width: 400px;
+  margin: 100px auto auto;
+}
+
+.label-space{
+  padding: 5px;
+}
+
+button{
+  margin: 20px auto auto;
+}
+
+.search-box {
+  padding: 8px;
+}
+
+.search-box input {
+  width: 188px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.search-box button {
+  width: 90px;
+}
+
+.search-button {
+  margin-right: 8px;
+}
+
