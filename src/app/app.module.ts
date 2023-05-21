@@ -37,6 +37,8 @@ import {HttpClientModule} from "@angular/common/http";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzMenuModule} from "ng-zorro-antd/menu";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {NzToolTipModule} from "ng-zorro-antd/tooltip";
+import { ViewFeedbackComponent } from './view-feedback/view-feedback.component';
 
 registerLocaleData(en);
 const antDesignIcons = AllIcons as {
@@ -55,7 +57,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     ViewUsersComponent,
     UserRegistrationComponent,
     LayoutComponent,
-    DashboardComponent
+    DashboardComponent,
+    ViewFeedbackComponent
   ],
   imports: [
     BrowserModule,
@@ -79,7 +82,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     HttpClientModule,
     NzButtonModule,
     NzMenuModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NzToolTipModule
   ],
   providers: [UserService, { provide: NZ_I18N, useValue: en_US }, { provide: NZ_ICONS, useValue: icons }, { provide: OverlayContainer, useClass: FullscreenOverlayContainer}],
   bootstrap: [AppComponent]

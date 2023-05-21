@@ -46,11 +46,15 @@ export class ViewUsersComponent implements OnInit {
       firstname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
       lastname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
+      confirmEmail: ['', [Validators.required, Validators.email]],
       cellPhoneNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10), Validators.minLength(10)]],
+      confirmCellPhoneNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10), Validators.minLength(10)]],
       userType: ['', Validators.required],
       primaryContact: ['', Validators.required]
     }, {
-      validators: [Validation.match('password', 'confirmPassword')]
+      validators: [Validation.match('password', 'confirmPassword'),
+        Validation.match('email', 'confirmEmail'),
+        Validation.match('cellPhoneNumber', 'confirmCellPhoneNumber')]
     });
 
     this.userContactEmail = new UserContact("216153804", "natasharakodi@gmail.com",

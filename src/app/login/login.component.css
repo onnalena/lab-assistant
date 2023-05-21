@@ -8,10 +8,18 @@ label{
 }
 .form-container{
   width: 400px;
-  margin: 100px auto auto;
+  margin: 40px auto auto;
 }
 
 .button-space {
   margin-right: 10%;
 }
+nz-footer {
+  text-align: center;
+  margin: 300px auto auto;
+}
+.layout{
+  background-color: white;
+}
+
 

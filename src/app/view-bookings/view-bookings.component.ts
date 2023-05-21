@@ -24,15 +24,9 @@ export class ViewBookingsComponent implements OnInit {
       new UserContact("","0648785074",ContactPreference.SMS, UserContactOption.PRIMARY)]);
 
   public bookingColumns: string[] = ['ID Number', 'Date And Time','Computer Name','Computer Lab', 'Status', 'Action'];
-  public bookings: Booking[] = [new Booking("Lab-1","216153804","",ContactPreference.EMAIL,
-    new Computer("PC-1","","",
-      new ComputerLab("Lab-1","","","","",0,0,0)), BookingStatus.IN_USE),
-    new Booking("Lab-1","216153804","",ContactPreference.EMAIL,
-      new Computer("PC-1","","",
-        new ComputerLab("Lab-1","","","","",0,0,0)), BookingStatus.UPCOMING),
-    new Booking("Lab-1","216153804","",ContactPreference.EMAIL,
-      new Computer("PC-1","","",
-        new ComputerLab("Lab-1","","","","",0,0,0)), BookingStatus.EXPIRED)] ;
+  public bookings: Booking[] = [new Booking("Lab-1","216153804","",ContactPreference.EMAIL, "Lab-1", BookingStatus.IN_USE),
+    new Booking("Lab-1","216153804","",ContactPreference.EMAIL, "PC-1", BookingStatus.UPCOMING),
+    new Booking("Lab-1","216153804","",ContactPreference.EMAIL, "PC-1", BookingStatus.EXPIRED)] ;
   public error = "";
   public isVisible = false;
   public selectedBooking = this.bookings[0];

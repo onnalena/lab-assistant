@@ -24,9 +24,14 @@ import {Feedback} from "../model/Feedback";
 })
 export class LayoutComponent implements OnInit {
 
+  private contentType = [
+	{ type: 'pdf', contentType: 'application/pdf', extension: 'pdf'},
+      { type: 'excel', contentType: 'application/csv', extension: 'xlsx'}
+  ];
+
   activePage: string = 'dashboard';
   isProfileSelected: boolean = false;
-  public user = new User('','Kopano','Rakodi','', UserStatus.ACTIVE,UserType.ADMIN,
+  public user = new User('216153804','Kopano','Rakodi','', UserStatus.ACTIVE,UserType.ADMIN,
     [new UserContact('','natasharakodi@gmail.com',ContactPreference.EMAIL, UserContactOption.SECONDARY),
       new UserContact('','0648785074',ContactPreference.SMS, UserContactOption.PRIMARY)]);
   public editProfileFormGroup: FormGroup;
@@ -71,7 +76,7 @@ export class LayoutComponent implements OnInit {
       oneTimePin: ['', Validators.required]
     });
     this.reportDate = new FormBuilder().group({
-      reportDate: ['', Validators.required]
+      reportDate: ['']
     });
     this.feedbackFormGroup = new FormBuilder().group({
       stars: ['', Validators.required],
@@ -278,7 +283,7 @@ export class LayoutComponent implements OnInit {
     }
 
     if(this.reportCriteria.reportType !== ReportType.BOOKING){
-      this.download(this.reportCriteria);
+      this.downloadFile(this.reportCriteria);
     }else {
       this.isBooking = true;
       console.log(this.reportCriteria);
@@ -289,7 +294,7 @@ export class LayoutComponent implements OnInit {
     console.log(this.reportCriteria);
     this.reportCriteria.reportDate = this.reportDate.controls['reportDate'].value;
     console.log(this.reportCriteria);
-    this.download(this.reportCriteria);
+    this.downloadFile(this.reportCriteria);
   }
 
   private download(reportCriteria: ReportCriteria): void {
@@ -307,8 +312,24 @@ export class LayoutComponent implements OnInit {
     });
   }
 
+  downloadFile(reportCriteria: ReportCriteria): void {
+    this.downloadService.downloadReport(reportCriteria).subscribe(response =>
+    {
+      let downloadTypeDetails = this.contentType.find(x => x.type.toUpperCase() === reportCriteria.downloadFileType);
+	let date = formatDate(new Date(), 'ddMMyyyy.HHmmSS', 'en-US')
+      let fileName = reportCriteria.reportType.toLowerCase() + "_" + date + "." + downloadTypeDetails?.extension;
+      console.log(response);
+	let blob = new Blob([response], {type: downloadTypeDetails?.contentType });
+	let a = document.createElement('a'); 
+	a.download = fileName;
+	a.href = window.URL.createObjectURL(blob);
+	a.click();
+      console.log(fileName);
+    })
+  }
+
   feedback(stars: number, comment: string): void{
-    let feedback = new Feedback(this.loggedInUser.idnumber, stars, comment);
+    let feedback = new Feedback(this.loggedInUser.idnumber, stars, comment, "");
     console.log(feedback);
     this.userService.userFeedback(feedback).subscribe(result => {
       if(result instanceof ErrorModel){

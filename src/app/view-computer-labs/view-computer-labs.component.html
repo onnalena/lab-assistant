@@ -17,9 +17,9 @@
     <td>{{data.openingTime}}</td>
     <td>{{data.closingTime}}</td>
     <td>
-      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <a (click)="showEditModal()"><span nz-icon nzType="edit" nzTheme="fill"></span></a>
       <nz-divider nzType="vertical"></nz-divider>
-      <button (click)="showConfirm(data.computerLabName)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+      <a (click)="showConfirm(data.computerLabName)"><span nz-icon nzType="delete" nzTheme="fill"></span></a>
     </td>
     <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Lab Details" [nzOkText]="'Save'"
               (nzOnCancel)="handleCancelEdit()" (nzOnOk)="showConfirmEdit()">

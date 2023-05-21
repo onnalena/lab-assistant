@@ -16,9 +16,9 @@
     <td>{{data.serialNumber}}</td>
     <td>{{data.computerLab.computerLabName}}</td>
     <td>
-      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <a (click)="showEditModal()"><span nz-icon nzType="edit" nzTheme="fill"></span></a>
       <nz-divider nzType="vertical"></nz-divider>
-      <button (click)="showConfirm(data)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+      <a (click)="showConfirm(data)"><span nz-icon nzType="delete" nzTheme="fill"></span></a>
     </td>
   </tr>
   </tbody>

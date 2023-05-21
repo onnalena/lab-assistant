@@ -14,11 +14,11 @@
   <tr *ngFor="let data of Table.data">
     <td nzAlign="center">{{data.idnumber}}</td>
     <td nzAlign="center">{{data.dateTime}}</td>
-    <td nzAlign="center">{{data.computer.computerName}}</td>
+    <td nzAlign="center">{{data.computerName}}</td>
     <td nzAlign="center">{{data.computerLabName}}</td>
     <td nzAlign="center">{{data.status}}</td>
     <td nzAlign="center">
-      <button (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></button>
+      <a (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></a>
       <nz-divider nzType="vertical"></nz-divider>
     </td>
   </tr>

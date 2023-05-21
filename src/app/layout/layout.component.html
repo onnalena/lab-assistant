@@ -33,8 +33,11 @@
                                                                                                            style="font-size: 22px;"></span> <span></span>
             Computers
           </li>
+	    <li *ngIf="loggedInUser.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('feed')"><span nz-icon nzType="laptop" nzTheme="outline"
+                                                                                                           style="font-size: 22px;"></span> <span></span>
+            User Feedback
+          </li>
           <li nz-submenu nzTitle="Download Report">
-
               <ul>
               <li nz-submenu nzTitle="Users">
                  <ul>
@@ -98,10 +101,11 @@
         <app-view-users *ngIf="activePage === 'users' "></app-view-users>
         <app-view-computer-labs *ngIf="activePage === 'lab' "></app-view-computer-labs>
         <app-view-computers *ngIf="activePage === 'comp' "></app-view-computers>
+	  <app-view-feedback *ngIf="activePage === 'feed' "></app-view-feedback>
       </nz-content>
     </nz-layout>
-    <nz-footer>Lab Assistant©2023</nz-footer>
   </nz-content>
+  <nz-footer>Lab Assistant©2023</nz-footer>
 </nz-layout>
 
 <nz-drawer [nzVisible]="isProfileSelected" [nzWidth]="300" [nzClosable]="true" (nzOnClose)="closeProfile()">
@@ -221,12 +225,7 @@
     <div class="example-container">
       <form [formGroup]="reportDate">
         <label class="label-otp">Report Date</label>
-        <input type="date" class="form-control" formControlName="reportDate" required
-               [ngClass]="{'is-invalid': reportDate.controls['reportDate'].touched &&
-               reportDate.controls['reportDate'].errors}">
-        <div *ngIf="reportDate.controls['reportDate'].errors" class="invalid-feedback">
-          <div *ngIf="reportDate.controls['reportDate'].errors['required']">Date is required!</div>
-        </div>
+        <input type="date" class="form-control" formControlName="reportDate">
       </form>
     </div>
   </ng-container>

@@ -73,20 +73,10 @@
         </div>
         <div class="form-group">
           <label>Primary Contact</label>
-          <div *ngIf="loggedInUser.userContacts[0].status === 'PRIMARY'">
-            <select formControlName="primaryContact" class="form-control">
-              <option
-                [ngValue]="loggedInUser.userContacts[1].contactPreference">{{loggedInUser.userContacts[1].contactPreference}}</option>
-              <option>{{loggedInUser.userContacts[0].contactPreference}}</option>
-            </select>
-          </div>
-          <div *ngIf="loggedInUser.userContacts[1].status === 'PRIMARY'">
-            <select formControlName="primaryContact" class="form-control">
-              <option
-                [ngValue]="loggedInUser.userContacts[0].contactPreference">{{loggedInUser.userContacts[0].contactPreference}}</option>
-              <option>{{loggedInUser.userContacts[1].contactPreference}}</option>
-            </select>
-          </div>
+          <select formControlName="contactPreference" class="form-control">
+            <option value="">Choose Primary Contact</option>
+            <option *ngFor="let contact of primaryContactOption" [ngValue]="contact">{{contact}}</option>
+          </select>
         </div>
       </form>
     </div>

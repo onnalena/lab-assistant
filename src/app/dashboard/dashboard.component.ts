@@ -36,8 +36,8 @@ export class DashboardComponent implements OnInit {
     "08:00", "17:00", 60, 20, 80)];
   public selectedDate = new SelectedBookingDate("", new Date());
   public computer = new Computer("PC-0","","",this.computerLabs[0]);
-  public userBooking = new Booking("Lab-2", "", "", ContactPreference.EMAIL, this.computer, BookingStatus.UPCOMING);
-
+  public userBooking = new Booking("Lab-2", "", "", ContactPreference.EMAIL, this.computer.computerName, BookingStatus.UPCOMING);
+  public primaryContactOption = ['EMAIL','SMS'];
   public bookingFormGroup: FormGroup;
   public isVisible = false;
   public isBookingVisible = false;
@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit {
     this.bookingFormGroup = new FormBuilder().group({
       date:['', Validators.required],
       availableTime: ['', Validators.required],
-      contactPreference:['', Validators.required]
+      contactPreference:['']
     });
   }
 
@@ -123,6 +123,7 @@ export class DashboardComponent implements OnInit {
   }
   bookComputer() {
     console.log('timeSlots', this.timeSlots);
+    console.log(this.formControl['contactPreference'].value);
     if(this.formControl['availableTime'].value === ''){
       this.err("Please select a time slot.");
     }else if(this.formControl['contactPreference'].value === ''){

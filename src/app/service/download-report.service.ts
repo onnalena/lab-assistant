@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders } from '@angular/common/http';
 import {environment} from "../../environments/environment";
 import {catchError, Observable, of} from "rxjs";
 import {ErrorModel} from "../model/ErrorModel";
@@ -12,8 +12,14 @@ export class DownloadReportService {
   constructor(private http: HttpClient) { }
 
   public downloadReport(reportCriteria: ReportCriteria):Observable<any>{
-    return this.http.post(environment.backendEndpoint + "report/download", reportCriteria).pipe(
-      catchError(err=> this.handleError(err)));
+    const headers = new HttpHeaders({
+      'content-type' : 'application/json'
+    });
+    return this.http.post(environment.backendEndpoint + "report/download", reportCriteria, {headers, responseType: 'blob'})
+  }
+
+  public downloadFile(reportCriteria: ReportCriteria){
+
   }
 
   public handleError(err: any) : Observable<any> {

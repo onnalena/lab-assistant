@@ -8,7 +8,7 @@ export class Booking{
     public idnumber: string,
     public dateTime: string,
     public contactPreference: ContactPreference,
-    public computer: Computer,
+    public computerName: string,
     public status: BookingStatus
   ) {
   }

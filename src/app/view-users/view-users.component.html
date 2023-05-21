@@ -22,9 +22,9 @@
     <td>{{element.status}}</td>
     <td>{{element.userType}}</td>
     <td>
-      <button (click)="showEditModal()"><span nz-icon nzType="create" nzTheme="fill"></span></button>
+      <a (click)="showEditModal()"><span nz-icon nzType="edit" nzTheme="fill"></span></a>
       <nz-divider nzType="vertical"></nz-divider>
-      <button (click)="showConfirmDelete(element)"><span nz-icon nzType="delete" nzTheme="fill"></span></button>
+      <a (click)="showConfirmDelete(element)"><span nz-icon nzType="delete" nzTheme="fill"></span></a>
     </td>
     <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit User" [nzOkText]="'Save Changes'" (nzOnOk)="showConfirmEdit()"
               (nzOnCancel)="handleCancelEdit()">
@@ -87,7 +87,7 @@
   <ng-container *nzModalContent>
     <div class="example-container">
       <form [formGroup]="userRegistrationFormGroup">
-        <div>
+        <div class="form-group">
           <label>Identity Number</label>
           <input type="text" class="form-control" formControlName="IDNumber" required
                  [ngClass]="{'is-invalid' : formControl['IDNumber'].touched && formControl['IDNumber'].errors}">
@@ -108,7 +108,7 @@
             <div *ngIf="formControl['firstname'].errors['minlength']">First Name too short!</div>
           </div>
         </div>
-        <div>
+        <div class="form-group">
           <label>Last Name</label>
           <input type="text" class="form-control" formControlName="lastname" required
                  [ngClass]="{'is-invalid':formControl['lastname'].touched && formControl['lastname'].errors}">
@@ -119,7 +119,7 @@
             <div *ngIf="formControl['lastname'].errors['minlength']">Last Name too short!</div>
           </div>
         </div>
-        <div>
+        <div class="form-group">
           <label>Email Address</label>
           <input matInput type="email" class="form-control" formControlName="email" required
                  [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}">
@@ -128,7 +128,16 @@
             <div *ngIf="formControl['email'].errors['required']">Email address is required!</div>
           </div>
         </div>
-        <div>
+        <div class="form-group">
+          <label>Confirm Email Address</label>
+          <input type="email" nz-input class="form-control" formControlName="confirmEmail" required
+                 [ngClass]="{'is-invalid': formControl['confirmEmail'].touched && formControl['confirmEmail'].errors}">
+          <div *ngIf="formControl['confirmEmail'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['confirmEmail'].errors['email']">Please enter a valid email address!</div>
+            <div *ngIf="formControl['confirmEmail'].errors['required']">Email address is required!</div>
+            <div *ngIf="formControl['confirmEmail'].errors['matching']">Email addresses don't match!</div></div>
+        </div>
+        <div class="form-group">
           <label>Cellphone Number</label>
           <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
                  [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}">
@@ -139,7 +148,18 @@
          formControl['cellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
           </div>
         </div>
-        <div>
+        <div class="form-group">
+          <label>Confirm Cellphone Number</label>
+          <input type="text" nz-input class="form-control" formControlName="confirmCellPhoneNumber" required
+                 [ngClass]="{'is-invalid': formControl['confirmCellPhoneNumber'].touched && formControl['confirmCellPhoneNumber'].errors}">
+          <div *ngIf="formControl['confirmCellPhoneNumber'].errors" class="invalid-feedback">
+            <div *ngIf="formControl['confirmCellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+            <div *ngIf="formControl['confirmCellPhoneNumber'].errors['minlength'] ||
+         formControl['confirmCellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+            <div *ngIf="formControl['confirmCellPhoneNumber'].errors['matching']">Cellphone Numbers don't match!</div>
+          </div>
+        </div>
+        <div class="form-group">
           <label>Primary Contact</label>
           <select formControlName="primaryContact" class="form-control" required
                   [ngClass]="{'is-invalid': formControl['primaryContact'].touched && formControl['primaryContact'].errors}">
@@ -147,7 +167,7 @@
             <option *ngFor="let contact of primaryContactOption" [ngValue]="contact">{{contact}}</option>
           </select>
         </div>
-        <div>
+        <div class="form-group">
           <label>User Type</label>
           <select formControlName="userType" class="form-control" required
                   [ngClass]="{'is-invalid': formControl['userType'].touched && formControl['userType'].errors}">

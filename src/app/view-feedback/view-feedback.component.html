@@ -1,0 +1,17 @@
+<nz-table #Table [nzData]="feedback" [nzBordered]="true">
+  <thead>
+  <tr>
+    <th *ngFor="let column of feedbackColumns">{{column}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of Table.data">
+    <td>{{data.idnumber}}</td>
+    <td>{{data.comment}}</td>
+    <td>{{data.stars}}</td>
+    <td>{{data.date}}</td>
+  </tr>
+  </tbody>
+</nz-table>
+
+

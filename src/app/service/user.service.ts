@@ -69,6 +69,11 @@ export class UserService {
       catchError(err => this.handleError(err))
     );
   }
+  public getFeedback(): Observable<any>{
+    return this.http.get(environment.backendEndpoint + "user/get-feedback").pipe(
+      catchError(err => this.handleError(err))
+    );
+  }
   public deleteUser(user: User): Observable<any>{
     return this.http.put(environment.backendEndpoint + "user/delete-user", user).pipe(
       catchError(err => this.handleError(err))
