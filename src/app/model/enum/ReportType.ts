@@ -2,5 +2,6 @@ export enum ReportType{
   USER = "USER",
   COMPUTER = "COMPUTER",
   COMPUTER_LAB = "COMPUTER_LAB",
-  BOOKING = "BOOKING"
+  BOOKING = "BOOKING",
+  FEEDBACK = "FEEDBACK"
 }

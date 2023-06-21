@@ -18,7 +18,8 @@
     <td nzAlign="center">{{data.computerLabName}}</td>
     <td nzAlign="center">{{data.status}}</td>
     <td nzAlign="center">
-      <a (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></a>
+      <a *ngIf="data.status.toString() === 'UPCOMING'" (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></a>
+      <a *ngIf="data.status.toString() !== 'UPCOMING'" (click)="showConfirm(data)" disabled="true"><span nz-tooltip nzTooltipTitle="Cancel"><span nz-icon nzType="stop" nzTheme="outline" style="font-size: 22px;"></span></span></a>
       <nz-divider nzType="vertical"></nz-divider>
     </td>
   </tr>

@@ -12,14 +12,15 @@ import {LayoutComponent} from "./layout/layout.component";
 
 const routes: Routes = [
   { path: "", component: UserRegistrationComponent},
-  { path: "home", component: LayoutComponent},
+  { path: "home", component: LayoutComponent, children: [
+      { path: "view-users", component: ViewUsersComponent},
+      { path: "view-bookings", component: ViewBookingsComponent},
+      { path: "view-computers", component: ViewComputersComponent},
+      { path: "view-computer-labs", component: ViewComputerLabsComponent},
+      { path: "dashboard", component: DashboardComponent}
+    ]},
   { path: "user-registration", component:  UserRegistrationComponent},
   { path: "login", component: LoginComponent},
-  { path: "view-users", component: ViewUsersComponent},
-  { path: "view-bookings", component: ViewBookingsComponent},
-  { path: "view-computers", component: ViewComputersComponent},
-  { path: "view-computer-labs", component: ViewComputerLabsComponent},
-  { path: "dashboard", component: DashboardComponent},
   { path: "update-password", component: UpdatePasswordComponent}
 ];
 @NgModule({

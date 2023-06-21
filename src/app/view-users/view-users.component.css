@@ -25,21 +25,8 @@ button{
   margin: 20px auto auto;
 }
 
-.search-box {
-  padding: 8px;
-}
-
-.search-box input {
-  width: 188px;
-  margin-bottom: 8px;
+.block{
   display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }
-
-.search-box button {
-  width: 90px;
-}
-
-.search-button {
-  margin-right: 8px;
-}
-

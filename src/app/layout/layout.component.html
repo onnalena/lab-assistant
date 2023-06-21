@@ -1,265 +1,306 @@
-<nz-layout class="layout">
-  <nz-header>
-    <div class="logo"></div>
-    <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu" style="margin-left: 83%">
-      <li nz-menu-item (click)="setActivePage('profile')"><span nz-icon nzType="profile" nzTheme="outline"
-                                                                style="font-size: 22px;"></span> <span></span> Profile</li>
+<div *ngIf="!logout">
+  <nz-layout class="layout">
+    <nz-header>
+      <div class="logo"></div>
+      <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu" style="margin-left: 83%">
+        <li nz-menu-item (click)="setActivePage('profile')"><span nz-icon nzType="profile" nzTheme="outline"
+                                                                  style="font-size: 22px;"></span> <span></span> Profile</li>
 
-      <li nz-menu-item (click)="setActivePage('reg')"><span nz-icon nzType="logout" nzTheme="outline"
-                                                            style="font-size: 22px;"></span> <span></span> LogOut
-      </li>
-    </ul>
-  </nz-header>
-  <nz-content class="outer-content">
-    <nz-layout class="inner-layout">
-      <nz-sider nzWidth="200px" nzTheme="light">
-        <ul nz-menu nzMode="inline" class="side-menu">
-          <li nz-menu-item (click)="setActivePage('dashboard')"><span nz-icon nzType="dashboard" nzTheme="outline"
+        <li nz-menu-item (click)="isLogout()"><span nz-icon nzType="logout" nzTheme="outline"
+                                                              style="font-size: 22px;"></span> <span></span> Logout
+        </li>
+      </ul>
+    </nz-header>
+    <nz-content class="outer-content">
+      <nz-layout class="inner-layout">
+        <nz-sider nzWidth="200px" nzTheme="light">
+          <ul nz-menu nzMode="inline" class="side-menu">
+            <li nz-menu-item (click)="setActivePage('dashboard')"><span nz-icon nzType="dashboard" nzTheme="outline"
+                                                                        style="font-size: 22px;"></span> <span></span>
+              Dashboard
+            </li>
+            <li nz-menu-item (click)="setActivePage('booking')"><span nz-icon nzType="schedule" nzTheme="outline"
                                                                       style="font-size: 22px;"></span> <span></span>
-            Dashboard
-          </li>
-          <li nz-menu-item (click)="setActivePage('booking')"><span nz-icon nzType="schedule" nzTheme="outline"
-                                                                    style="font-size: 22px;"></span> <span></span>
-            Bookings
-          </li>
-          <li *ngIf="loggedInUser.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('users')"><span nz-icon nzType="user" nzTheme="outline"
-                                                                                                            style="font-size: 22px;"></span> <span></span> Users
-          </li>
-          <li *ngIf="loggedInUser.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('lab')"><span nz-icon nzType="bank" nzTheme="outline"
-                                                                                                          style="font-size: 22px;"></span> <span></span> Computer
-            Labs
-          </li>
-          <li *ngIf="loggedInUser.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('comp')"><span nz-icon nzType="laptop" nzTheme="outline"
-                                                                                                           style="font-size: 22px;"></span> <span></span>
-            Computers
-          </li>
-	    <li *ngIf="loggedInUser.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('feed')"><span nz-icon nzType="laptop" nzTheme="outline"
-                                                                                                           style="font-size: 22px;"></span> <span></span>
-            User Feedback
-          </li>
-          <li nz-submenu nzTitle="Download Report">
+              Bookings
+            </li>
+            <li *ngIf="user.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('users')"><span nz-icon nzType="user" nzTheme="outline"
+                                                                                                      style="font-size: 22px;"></span> <span></span> Users
+            </li>
+            <li *ngIf="user.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('lab')"><span nz-icon nzType="bank" nzTheme="outline"
+                                                                                                    style="font-size: 22px;"></span> <span></span> Computer
+              Labs
+            </li>
+            <li *ngIf="user.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('comp')"><span nz-icon nzType="laptop" nzTheme="outline"
+                                                                                                     style="font-size: 22px;"></span> <span></span>
+              Computers
+            </li>
+            <li *ngIf="user.userType === 'ADMIN'" nz-menu-item (click)="setActivePage('feed')"><span nz-icon nzType="comment" nzTheme="outline"
+                                                                                                     style="font-size: 22px;"></span> <span></span>
+              User Feedback
+            </li>
+            <li *ngIf="user.userType === 'ADMIN'" nz-submenu nzTitle="Download Report">
               <ul>
-              <li nz-submenu nzTitle="Users">
-                 <ul>
-                   <li nz-menu-item (click)="downloadReport('USER', 'EXCEL')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                    style="font-size: 22px;"></span> <span></span>
-                     XLSX Format
-                   </li>
-                   <li nz-menu-item (click)="downloadReport('USER', 'PDF')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                  style="font-size: 22px;"></span> <span></span>
-                     PDF Format
-                   </li>
-                 </ul>
-               </li>
-               <li nz-submenu nzTitle="Computers">
-                 <ul>
-                   <li nz-menu-item (click)="downloadReport('COMPUTER', 'EXCEL')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                        style="font-size: 22px;"></span> <span></span>
-                     XLSX Format
-                   </li>
-                   <li nz-menu-item (click)="downloadReport('COMPUTER', 'PDF')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                      style="font-size: 22px;"></span> <span></span>
-                     PDF Format
-                   </li>
-                 </ul>
-               </li>
-               <li nz-submenu nzTitle="Computer Labs">
-                 <ul>
-                   <li nz-menu-item (click)="downloadReport('COMPUTER_LAB', 'EXCEL')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                            style="font-size: 22px;"></span> <span></span>
-                     XLSX Format
-                   </li>
-                   <li nz-menu-item (click)="downloadReport('COMPUTER_LAB', 'PDF')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                          style="font-size: 22px;"></span> <span></span>
-                     PDF Format
-                   </li>
-                 </ul>
-               </li>
-               <li nz-submenu nzTitle="Bookings">
-                 <ul>
-                   <li nz-menu-item (click)="downloadReport('BOOKING', 'EXCEL')"><span nz-icon nzType="file" nzTheme="outline"
-                                                                                       style="font-size: 22px;"></span> <span></span>
-                     XLSX Format
-                   </li>
-                   <li nz-menu-item (click)="downloadReport('BOOKING', 'PDF')"><span nz-icon nzType="file" nzTheme="outline"
+                <li nz-submenu nzTitle="Users">
+                  <ul>
+                    <li nz-menu-item (click)="downloadReport('USER', 'EXCEL')"><span nz-icon nzType="file-excel" nzTheme="outline"
                                                                                      style="font-size: 22px;"></span> <span></span>
-                     PDF Format
-                   </li>
-                 </ul>
-               </li>
-            </ul>
-          </li>
-          <li nz-menu-item (click)="showFeedBack()"><span
-            style="font-size: 22px;"></span> <span></span>
-            Rate Website
-          </li>
-        </ul>
-      </nz-sider>
-      <nz-content class="inner-content">
-        <app-dashboard *ngIf="activePage === 'dashboard' "></app-dashboard>
-        <app-view-bookings *ngIf="activePage === 'booking' "></app-view-bookings>
-        <app-view-users *ngIf="activePage === 'users' "></app-view-users>
-        <app-view-computer-labs *ngIf="activePage === 'lab' "></app-view-computer-labs>
-        <app-view-computers *ngIf="activePage === 'comp' "></app-view-computers>
-	  <app-view-feedback *ngIf="activePage === 'feed' "></app-view-feedback>
-      </nz-content>
-    </nz-layout>
-  </nz-content>
-  <nz-footer>Lab Assistant©2023</nz-footer>
-</nz-layout>
+                      XLSX
+                    </li>
+                    <li nz-menu-item (click)="downloadReport('USER', 'PDF')"><span nz-icon nzType="file-pdf" nzTheme="outline"
+                                                                                   style="font-size: 22px;"></span> <span></span>
+                      PDF
+                    </li>
+                  </ul>
+                </li>
+                <li nz-submenu nzTitle="Computers">
+                  <ul>
+                    <li nz-menu-item (click)="downloadReport('COMPUTER', 'EXCEL')"><span nz-icon nzType="file-excel" nzTheme="outline"
+                                                                                         style="font-size: 22px;"></span> <span></span>
+                      XLSX
+                    </li>
+                    <li nz-menu-item (click)="downloadReport('COMPUTER', 'PDF')"><span nz-icon nzType="file-pdf" nzTheme="outline"
+                                                                                       style="font-size: 22px;"></span> <span></span>
+                      PDF
+                    </li>
+                  </ul>
+                </li>
+                <li nz-submenu nzTitle="Computer Labs">
+                  <ul>
+                    <li nz-menu-item (click)="downloadReport('COMPUTER_LAB', 'EXCEL')"><span nz-icon nzType="file-excel" nzTheme="outline"
+                                                                                             style="font-size: 22px;"></span> <span></span>
+                      XLSX
+                    </li>
+                    <li nz-menu-item (click)="downloadReport('COMPUTER_LAB', 'PDF')"><span nz-icon nzType="file-pdf" nzTheme="outline"
+                                                                                           style="font-size: 22px;"></span> <span></span>
+                      PDF
+                    </li>
+                  </ul>
+                </li>
+                <li nz-submenu nzTitle="Bookings">
+                  <ul>
+                    <li nz-menu-item (click)="downloadReport('BOOKING', 'EXCEL')"><span nz-icon nzType="file-excel" nzTheme="outline"
+                                                                                        style="font-size: 22px;"></span> <span></span>
+                      XLSX
+                    </li>
+                    <li nz-menu-item (click)="downloadReport('BOOKING', 'PDF')"><span nz-icon nzType="file-pdf" nzTheme="outline"
+                                                                                      style="font-size: 22px;"></span> <span></span>
+                      PDF
+                    </li>
+                  </ul>
+                </li>
+                <li nz-submenu nzTitle="User Feedback">
+                  <ul>
+                    <li nz-menu-item (click)="downloadReport('FEEDBACK', 'EXCEL')"><span nz-icon nzType="file-excel" nzTheme="outline"
+                                                                                         style="font-size: 22px;"></span> <span></span>
+                      XLSX
+                    </li>
+                    <li nz-menu-item (click)="downloadReport('FEEDBACK', 'PDF')"><span nz-icon nzType="file-pdf" nzTheme="outline"
+                                                                                       style="font-size: 22px;"></span> <span></span>
+                      PDF
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li *ngIf="user.userType !== 'ADMIN'" nz-menu-item (click)="showFeedBack()"><span
+              nz-icon nzType="container" nzTheme="outline" style="font-size: 22px;"></span> <span></span>
+              Rate Website
+            </li>
+          </ul>
+        </nz-sider>
+        <nz-content class="inner-content">
+          <app-dashboard *ngIf="activePage === 'dashboard' " [loggedInUser]="user"></app-dashboard>
+          <app-view-bookings *ngIf="activePage === 'booking' " [loggedInUser]="user"></app-view-bookings>
+          <app-view-users *ngIf="activePage === 'users' "></app-view-users>
+          <app-view-computer-labs *ngIf="activePage === 'lab' "></app-view-computer-labs>
+          <app-view-computers *ngIf="activePage === 'comp' "></app-view-computers>
+          <app-view-feedback *ngIf="activePage === 'feed' "></app-view-feedback>
+	 
+        </nz-content>
+      </nz-layout>
+    </nz-content>
+    <nz-footer>Lab Assistant©2023</nz-footer>
+  </nz-layout>
 
-<nz-drawer [nzVisible]="isProfileSelected" [nzWidth]="300" [nzClosable]="true" (nzOnClose)="closeProfile()">
-  <ng-container *nzDrawerContent>
-    <nz-descriptions [nzColumn]="1" nzTitle="User Details">
-      <nz-descriptions-item nzTitle="Identity Number" [nzSpan]="1">{{ user.idnumber }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="First Name" [nzSpan]="2">{{ user.firstname }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Last Name" [nzSpan]="1">{{ user.lastname }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="CellPhone Number" [nzSpan]="1">{{ getContact(user, 'SMS') }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Email" [nzSpan]="1">{{ getContact(user, 'EMAIL') }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Primary Contact" [nzSpan]="1">{{ getPrimaryContract(user) }}</nz-descriptions-item>
-    </nz-descriptions>
-    <nz-divider></nz-divider>
-    <button nz-button nzType="primary" nzBlock (click)="showEditModal()">Edit Profile</button><p></p>
-    <button nz-button nzType="primary" nzBlock (click)="showModal()">Change Password</button>
-  </ng-container>
-</nz-drawer>
+  <nz-drawer [nzVisible]="isProfileSelected" [nzWidth]="300" [nzClosable]="true" (nzOnClose)="closeProfile()">
+    <ng-container *nzDrawerContent>
+      <nz-descriptions [nzColumn]="1" nzTitle="User Details">
+        <nz-descriptions-item nzTitle="RSA ID Number" [nzSpan]="1">{{ user.idnumber }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="First Name" [nzSpan]="2">{{ user.firstname }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Last Name" [nzSpan]="1">{{ user.lastname }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Cellphone Number" [nzSpan]="1">{{ getContact(user, 'SMS') }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Email" [nzSpan]="1">{{ getContact(user, 'EMAIL') }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Primary Contact" [nzSpan]="1">{{ getPrimaryContract(user) }}</nz-descriptions-item>
+      </nz-descriptions>
+      <nz-divider></nz-divider>
+      <button nz-button nzType="primary" nzBlock (click)="showEditModal()">Edit Profile</button><p></p>
+      <button nz-button nzType="primary" nzBlock (click)="showModal()">Change Password</button>
+    </ng-container>
+  </nz-drawer>
 
-<nz-modal [(nzVisible)]="isPasswordVisible" nzTitle="Update Password" [nzOkText]="'Change Password'"
-          (nzOnOk)="showConfirmPassword()"
-          (nzOnCancel)="handleCancel()">
-  <ng-container *nzModalContent>
-    <div class="example-container">
-      <form [formGroup]="updatePasswordFormGroup">
-        <div>
-          <label>New Password</label>
-          <input matInput type="password" class="form-control" formControlName="password" required
-                 [ngClass]="{'is-invalid': formControlP['password'].touched && formControlP['password'].errors}">
-          <div *ngIf="formControlP['password'].errors" class="invalid-feedback">
-            <div *ngIf="formControlP['password'].errors['pattern']">Password must contain characters and digits!</div>
-            <div *ngIf="formControlP['password'].errors['required']">Password is required!</div>
-            <div *ngIf="formControlP['password'].errors['maxlength']">Password is too long!</div>
-            <div *ngIf="formControlP['password'].errors['minlength']">Password is too short!</div>
-          </div>
-        </div>
-        <div>
-          <label>Confirm Password</label>
-          <input matInput type="password" class="form-control" formControlName="confirmPassword" required
-                 [ngClass]="{'is-invalid': formControlP['confirmPassword'].touched && formControlP['confirmPassword'].errors}">
-          <div *ngIf="formControlP['confirmPassword'].errors" class="invalid-feedback">
-            <div *ngIf="formControlP['confirmPassword'].errors['required']">Confirm Password is required!</div>
-            <div *ngIf="formControlP['confirmPassword'].errors['matching']">Passwords don't match!</div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </ng-container>
-</nz-modal>
-
-<nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Profile" [nzOkText]="'Save Changes'" (nzOnOk)="showConfirmEdit()"
-          (nzOnCancel)="handleCancelEdit()">
-  <ng-container *nzModalContent>
-    <div class="example-container">
-      <div>
-        <form [formGroup]="editProfileFormGroup">
-          <div>
-            <label>Email Address</label>
-            <input matInput type="email" class="form-control" formControlName="email" required
-                   [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}"
-                   *ngIf="loggedInUser.userContacts[0].contactPreference === 'EMAIL'"
-                   [(ngModel)]="loggedInUser.userContacts[0].contact">
-            <input matInput type="email" class="form-control" formControlName="email" required
-                   [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}"
-                   *ngIf="loggedInUser.userContacts[1].contactPreference === 'EMAIL'"
-                   [(ngModel)]="loggedInUser.userContacts[1].contact">
-            <div *ngIf="formControl['email'].errors" class="invalid-feedback">
-              <div *ngIf="formControl['email'].errors['email']">Please enter a valid email address!</div>
-              <div *ngIf="formControl['email'].errors['required']">Email address is required!</div>
+  <nz-modal [(nzVisible)]="isPasswordVisible" nzTitle="Update Password">
+    <ng-container *nzModalContent>
+      <div class="example-container">
+        <form [formGroup]="updatePasswordFormGroup">
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" class="form-control" formControlName="password" required
+                   [ngClass]="{'is-invalid': formControlP['password'].touched && formControlP['password'].errors}">
+            <div *ngIf="formControlP['password'].errors" class="invalid-feedback">
+              <div *ngIf="formControlP['password'].errors['pattern']">Password must contain characters and digits!<p>Special characters allowed - !?`~@#$%^&*+=!</div>
+              <div *ngIf="formControlP['password'].errors['required']">Password is required!</div>
+              <div *ngIf="formControlP['password'].errors['maxlength']">Password is too long!</div>
+              <div *ngIf="formControlP['password'].errors['minlength']">Password is too short!</div>
             </div>
           </div>
-          <div>
-            <label>Cellphone Number</label>
-            <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
-                   [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}"
-                   *ngIf="loggedInUser.userContacts[0].contactPreference === 'SMS'"
-                   [(ngModel)]="loggedInUser.userContacts[0].contact">
-            <input matInput type="text" class="form-control" formControlName="cellPhoneNumber" required
-                   [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}"
-                   *ngIf="loggedInUser.userContacts[1].contactPreference === 'SMS'"
-                   [(ngModel)]="loggedInUser.userContacts[1].contact">
-            <div *ngIf="formControl['cellPhoneNumber'].errors" class="invalid-feedback">
-              <div *ngIf="formControl['cellPhoneNumber'].errors['pattern']">Cellphone Number must only contain digits!
-              </div>
-              <div *ngIf="formControl['cellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
-              <div
-                *ngIf="formControl['cellPhoneNumber'].errors['minlength'] || formControl['cellPhoneNumber'].errors['maxlength']">
-                Cellphone Number is invalid!
-              </div>
-            </div>
-          </div>
-          <div>
-            <label>Primary Contact</label>
-            <div *ngIf="loggedInUser.userContacts[0].status === 'PRIMARY'">
-              <select formControlName="primaryContact" class="form-control">
-                <option
-                  [ngValue]="loggedInUser.userContacts[1].contactPreference">{{loggedInUser.userContacts[1].contactPreference}}</option>
-                <option>{{loggedInUser.userContacts[0].contactPreference}}</option>
-              </select>
-            </div>
-            <div *ngIf="loggedInUser.userContacts[1].status === 'PRIMARY'">
-              <select formControlName="primaryContact" class="form-control">
-                <option
-                  [ngValue]="loggedInUser.userContacts[0].contactPreference">{{loggedInUser.userContacts[0].contactPreference}}</option>
-                <option>{{loggedInUser.userContacts[1].contactPreference}}</option>
-              </select>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" class="form-control" formControlName="confirmPassword" required
+                   [ngClass]="{'is-invalid': formControlP['confirmPassword'].touched && formControlP['confirmPassword'].errors}">
+            <div *ngIf="formControlP['confirmPassword'].errors" class="invalid-feedback">
+              <div *ngIf="formControlP['confirmPassword'].errors['required']">Confirm Password is required!</div>
+              <div *ngIf="formControlP['confirmPassword'].errors['matching']">Passwords don't match!</div>
             </div>
           </div>
         </form>
       </div>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+      <button nz-button nzType="primary" (click)="showConfirmPassword()" [disabled]="formControlP['confirmPassword'].invalid">Change Password</button>
     </div>
-  </ng-container>
-</nz-modal>
-
-<nz-modal [(nzVisible)]="isBooking" nzTitle="Download Report" [nzOkText]="'Download'"
-          (nzOnCancel)="handleReportBooking()" (nzOnOk)="downloadBookingReport()">
-  <ng-container *nzModalContent>
-    <div class="example-container">
-      <form [formGroup]="reportDate">
-        <label class="label-otp">Report Date</label>
-        <input type="date" class="form-control" formControlName="reportDate">
-      </form>
+  </nz-modal>
+  <nz-modal [(nzVisible)]="isConfirmPassword" nzTitle="Confirm Current Password">
+    <ng-container *nzModalContent>
+      <div class="example-container">
+        <form [formGroup]="updatePasswordFormGroup">
+          <div class="form-group">
+            <label>Enter current password</label>
+            <input type="password" class="form-control" formControlName="currentPassword" required
+                   [ngClass]="{'is-invalid': formControlP['currentPassword'].touched && formControlP['currentPassword'].errors}">
+            <div *ngIf="formControlP['currentPassword'].errors" class="invalid-feedback">
+              <div *ngIf="formControlP['currentPassword'].errors['required']">Password is required!</div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="handleCancelPass()">Cancel</button>
+      <button nz-button nzType="primary" (click)="onSubmitPassword()" [disabled]="formControlP['currentPassword'].invalid">Submit</button>
     </div>
-  </ng-container>
-</nz-modal>
+  </nz-modal>
 
-<nz-modal [(nzVisible)]="isOTPVisible" nzTitle="Verify Contact" [nzOkText]="'Verify OTP'"
-          (nzOnCancel)="handleCancelOTP()" (nzOnOk)="otpSubmit()">
-  <ng-container *nzModalContent>
-    <div class="example-container">
-      <form [formGroup]="oneTimePinFormGroup">
-        <label class="label-otp">Please enter the One Time Pin: </label>
-        <input type="text" class="form-control" formControlName="oneTimePin" required
-               [ngClass]="{'is-invalid': formControlO['oneTimePin'].touched &&
-               formControlO['oneTimePin'].errors}">
-        <div *ngIf="formControlO['oneTimePin'].errors" class="invalid-feedback">
-          <div *ngIf="formControlO['oneTimePin'].errors['required']">OTP is required!</div>
+  <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Profile">
+    <ng-container *nzModalContent>
+      <div class="example-container">
+        <div>
+          <form [formGroup]="editProfileFormGroup">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" class="form-control" formControlName="email" required
+                     [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}"
+                     *ngIf="user.userContacts[0].contactPreference === 'EMAIL'"
+                     [(ngModel)]="user.userContacts[0].contact">
+              <input type="email" class="form-control" formControlName="email" required
+                     [ngClass]="{'is-invalid': formControl['email'].touched && formControl['email'].errors}"
+                     *ngIf="user.userContacts[1].contactPreference === 'EMAIL'"
+                     [(ngModel)]="user.userContacts[1].contact">
+              <div *ngIf="formControl['email'].errors" class="invalid-feedback">
+                <div *ngIf="formControl['email'].errors['email']">Please enter a valid email address!</div>
+                <div *ngIf="formControl['email'].errors['required']">Email address is required!</div>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="formControl['email'].value !== originalContactEmail">
+              <label>Confirm Email Address</label>
+              <input type="email" nz-input class="form-control" formControlName="confirmEmail" required
+                     [ngClass]="{'is-invalid': formControl['confirmEmail'].touched && formControl['confirmEmail'].errors}">
+              <div *ngIf="formControl['confirmEmail'].errors" class="invalid-feedback">
+                <div *ngIf="formControl['confirmEmail'].errors['email']">Please enter a valid email address!</div>
+                <div *ngIf="formControl['confirmEmail'].errors['required']">Email address is required!</div>
+                <div *ngIf="formControl['confirmEmail'].errors['matching']">Email addresses don't match!</div></div>
+            </div>
+            <div class="form-group">
+              <label>Cellphone Number</label>
+              <input  type="text" class="form-control" formControlName="cellPhoneNumber" required
+                      [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}"
+                      *ngIf="user.userContacts[0].contactPreference === 'SMS'"
+                      [(ngModel)]="user.userContacts[0].contact">
+              <input type="text" class="form-control" formControlName="cellPhoneNumber" required
+                     [ngClass]="{'is-invalid': formControl['cellPhoneNumber'].touched && formControl['cellPhoneNumber'].errors}"
+                     *ngIf="user.userContacts[1].contactPreference === 'SMS'"
+                     [(ngModel)]="user.userContacts[1].contact">
+              <div *ngIf="formControl['cellPhoneNumber'].errors" class="invalid-feedback">
+                <div *ngIf="formControl['cellPhoneNumber'].errors['pattern']">Cellphone Number must only contain digits</div>
+                <div *ngIf="formControl['cellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+                <div *ngIf="formControl['cellPhoneNumber'].errors['minlength'] || formControl['cellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="formControl['cellPhoneNumber'].value !== originalContactNumber">
+              <label>Confirm Cellphone Number</label>
+              <input type="text" nz-input class="form-control" formControlName="confirmCellPhoneNumber" required
+                     [ngClass]="{'is-invalid': formControl['confirmCellPhoneNumber'].touched && formControl['confirmCellPhoneNumber'].errors}">
+              <div *ngIf="formControl['confirmCellPhoneNumber'].errors" class="invalid-feedback">
+                <div *ngIf="formControl['confirmCellPhoneNumber'].errors['required']">Cellphone Number is required!</div>
+                <div *ngIf="formControl['confirmCellPhoneNumber'].errors['minlength'] || formControl['confirmCellPhoneNumber'].errors['maxlength']">Cellphone Number is invalid!</div>
+                <div *ngIf="formControl['confirmCellPhoneNumber'].errors['matching']">Cellphone numbers don't match!</div>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="handleCancelEdit()">Cancel</button>
+      <button nz-button nzType="primary" (click)="showConfirmEdit()" [disabled]="(formControl['confirmEmail'].value == ''
+     && formControl['confirmCellPhoneNumber'].value == '') || (formControl['confirmEmail'].invalid
+     && formControl['confirmCellPhoneNumber'].invalid)">Save</button>
     </div>
-  </ng-container>
-</nz-modal>
+  </nz-modal>
 
-<nz-modal [(nzVisible)]="isFeedback" nzTitle="Feedback" [nzOkText]="'Submit'"
-          (nzOnCancel)="handleFeedback()" (nzOnOk)="feedback(rateValue,comment)">
-  <ng-container *nzModalContent>
-    <p>How do you like the website?</p>
-    <nz-rate [(ngModel)]="rateValue" [nzTooltips]="tooltips"></nz-rate>
-    <span *ngIf="rateValue" class="ant-rate-text"></span>
-    <nz-comment>
-      <nz-comment-content>
-        <nz-form-item>
-          <textarea [(ngModel)]="comment" nz-input rows="3" placeholder="Comment"></textarea>
-        </nz-form-item>
-      </nz-comment-content>
-    </nz-comment>
-  </ng-container>
-</nz-modal>
+  <nz-modal [(nzVisible)]="isBooking" nzTitle="Download Report" [nzOkText]="'Download'"
+            (nzOnCancel)="handleReportBooking()" (nzOnOk)="downloadBookingReport()">
+    <ng-container *nzModalContent>
+      <div class="example-container">
+        <form [formGroup]="reportDate">
+          <label class="label-otp">Report Date</label>
+          <input type="date" class="form-control" formControlName="reportDate">
+        </form>
+      </div>
+    </ng-container>
+  </nz-modal>
+
+  <nz-modal [(nzVisible)]="isOTPVisible" nzTitle="Verify Contact" [nzOkText]="'Verify OTP'"
+            (nzOnCancel)="handleCancelOTP()" (nzOnOk)="otpSubmit()">
+    <ng-container *nzModalContent>
+      <div class="example-container">
+        <form [formGroup]="oneTimePinFormGroup">
+          <label class="label-otp">Please enter the One Time Pin: </label>
+          <input type="text" class="form-control" formControlName="oneTimePin" required
+                 [ngClass]="{'is-invalid': formControlO['oneTimePin'].touched &&
+               formControlO['oneTimePin'].errors}">
+          <div *ngIf="formControlO['oneTimePin'].errors" class="invalid-feedback">
+            <div *ngIf="formControlO['oneTimePin'].errors['required']">OTP is required!</div>
+          </div>
+        </form>
+      </div>
+    </ng-container>
+  </nz-modal>
+
+  <nz-modal [(nzVisible)]="isFeedback" nzTitle="Feedback" [nzOkText]="'Submit'"
+            (nzOnCancel)="handleFeedback()" (nzOnOk)="feedback(rateValue,comment)">
+    <ng-container *nzModalContent>
+      <p>How do you like the website?</p>
+      <nz-rate [(ngModel)]="rateValue" [nzTooltips]="tooltips"></nz-rate>
+      <span *ngIf="rateValue" class="ant-rate-text"></span>
+      <nz-comment>
+        <nz-comment-content>
+          <nz-form-item>
+            <textarea [(ngModel)]="comment" nz-input rows="3" placeholder="Comment"></textarea>
+          </nz-form-item>
+        </nz-comment-content>
+      </nz-comment>
+    </ng-container>
+  </nz-modal>
+</div>
+<app-login *ngIf="logout"></app-login>

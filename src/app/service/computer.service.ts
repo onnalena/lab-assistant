@@ -29,6 +29,18 @@ export class ComputerService {
     );
   }
 
+  public unlinkComputer(computerName: string){
+    return this.http.post(environment.backendEndpoint + "computer/unlink-computer", computerName).pipe(
+      catchError(err=> this.handleErrors(err))
+    );
+  }
+
+  public linkComputer(computer: Computer){
+    return this.http.post(environment.backendEndpoint + "computer/link-computer", computer).pipe(
+      catchError(err=> this.handleErrors(err))
+    );
+  }
+
   public deleteComputer(computer: Computer){
     return this.http.post(environment.backendEndpoint + "computer/delete-computer", computer).pipe(
       catchError(err=> this.handleErrors(err))

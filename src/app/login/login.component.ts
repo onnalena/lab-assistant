@@ -22,20 +22,26 @@ export class LoginComponent implements OnInit {
     []),LoginType.LOGIN);
   public loginFormGroup: FormGroup;
   public forgotPasswordFormGroup: FormGroup;
+  public inactiveFormGroup: FormGroup;
   public isForgotVisible = false;
   public isLogin = false;
   public isReg = false;
   public isReset = false;
-  public error = "";
+  public isInactive = false;
+
   constructor(private userService: UserService, private route: Router, private modal: NzModalService) {
     this.loginFormGroup = new FormBuilder().group({
       IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'),
-        Validators.minLength(9), Validators.maxLength(9)]],
+        Validators.minLength(13), Validators.maxLength(13)]],
       password: ['', Validators.required]
     });
     this.forgotPasswordFormGroup = new FormBuilder().group({
       IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'),
-        Validators.minLength(9), Validators.maxLength(9)]]
+        Validators.minLength(13), Validators.maxLength(13)]]
+    });
+
+    this.inactiveFormGroup = new FormBuilder().group({
+      otp: ['', Validators.required]
     });
   }
 
@@ -45,6 +51,10 @@ export class LoginComponent implements OnInit {
   //Open Dialogs
   showForgotModal(): void {
     this.isForgotVisible = true;
+  }
+
+  showInactiveModal(): void{
+    this.isInactive = true;
   }
   err(message: string): void{
     this.modal.error({
@@ -61,44 +71,70 @@ export class LoginComponent implements OnInit {
     })
   }
 
+  message(message: string): void{
+    this.modal.success({
+      nzTitle: 'Notification',
+      nzContent: message,
+      nzOnOk: ()=>console.log('OK')
+    })
+  }
+
   //Close Dialogs
   handleOk(): void {
     this.isForgotVisible = false;
+    this.forgotPasswordFormGroup.reset();
+  }
+  handleCancel(): void {
+    this.isInactive = false;
   }
 
   //Processing
   logIn():void{
-
     this.loginPayload.idnumber = this.loginFormGroup.controls['IDNumber'].value;
     this.loginPayload.password = this.loginFormGroup.controls['password'].value;
 
+    console.log(this.loginPayload);
+
     this.userService.logIn(this.loginPayload).subscribe((result) => {
       if (result instanceof ErrorModel) {
-        // handle error
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else {
         this.loginResponse = result;
-        if (this.loginResponse.loginType === LoginType.LOGIN) {
-          this.isLogin = true;
-        } else {
-          this.isReset = true;
-          console.log(this.loginResponse);
+        if(this.loginResponse.user.status.trim() === UserStatus.INACTIVE){
+          this.isInactive = true;
+	    this.message("Failed to login, account is inactive - A One Time Pin was sent to you to verify your account.");
+        }else {
+          if (this.loginResponse.loginType === LoginType.LOGIN) {
+            this.isLogin = true;
+            console.log(this.loginResponse.user);
+          } else {
+            this.isReset = true;
+            console.log(this.loginResponse);
+          }
         }
       }
     });
   }
   passwordReset() {
-    this.userService.forgotPassword(this.forgotPasswordFormGroup.controls['IDNumber'].value).subscribe(
-      result => {
+    this.userService.forgotPassword(this.forgotPasswordFormGroup.controls['IDNumber'].value).subscribe(result => {
         if(result instanceof ErrorModel){
-          this.error = result.error;
-          this.err(this.error);
+          return this.err(result.error);
         } else{
           this.success("A Temporary Login Pin will be sent to you shortly. A password change will be required upon logging in.");
         }
       }
     );
+  }
+  verifyOTP(){
+    this.userService.verifyUser(this.inactiveFormGroup.controls['otp'].value,
+this.loginFormGroup.controls['IDNumber'].value).subscribe(result => {
+      if(result instanceof ErrorModel){
+        this.err(result.error);
+      } else{
+        this.success("Successfully verified OTP.");
+	  this.isInactive = false;
+      }
+    });
   }
   goToReg() {
     this.isReg = true;

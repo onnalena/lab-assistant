@@ -26,23 +26,21 @@ export class UserRegistrationComponent implements OnInit {
   public isFormValid = false;
   public primaryContactOption: string[] = ["EMAIL", "SMS"];
   isOTPVisible = false;
-  public backendError = false;
-  public error = "";
   public IDNumber = "";
 
   constructor(private userService: UserService, private formBuilder: FormBuilder, private modal: NzModalService) {
 
     this.userRegistrationFormGroup = new FormBuilder().group({
-      IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10)]],
-      firstname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
-      lastname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
+      IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(13), Validators.minLength(13)]],
+      firstname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(25)]],
+      lastname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(25)]],
       email: ['', [Validators.required, Validators.email]],
       confirmEmail: ['', [Validators.required, Validators.email]],
       cellPhoneNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10), Validators.minLength(10)]],
       confirmCellPhoneNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10), Validators.minLength(10)]],
       password: ['', [Validators.required, Validators.pattern('[A-Za-z0-9!?`~@#$%^&*+=]+'), Validators.minLength(8), Validators.maxLength(16)]],
       confirmPassword: ['', [Validators.required, Validators.pattern('[A-Za-z0-9!?`~@#$%^&*+=]+'), Validators.minLength(8), Validators.maxLength(16)]],
-      primaryContact: ['']
+      primaryContact: ['', Validators.required]
     }, {
       validator: [Validation.match('password', 'confirmPassword'),
         Validation.match('email', 'confirmEmail'),
@@ -124,9 +122,7 @@ export class UserRegistrationComponent implements OnInit {
 
     this.userService.save(this.userRegistration).subscribe(result => {
       if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else{
         this.userRegistration = result;
         this.IDNumber = this.userRegistration.idnumber;
@@ -140,10 +136,9 @@ export class UserRegistrationComponent implements OnInit {
   otpSubmit(){
     this.userService.verifyUser(this.formControlO['oneTimePin'].value, this.userRegistration.idnumber).subscribe(result => {
       if(result instanceof ErrorModel){
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else{
-        this.success("OTP was successfully verified.");
+        this.success("Successfully verified OTP.");
       }
     });
   }

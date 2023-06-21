@@ -1,6 +1,6 @@
 export class NewPassword{
   constructor(
-    public idNumber: string,
+    public idnumber: string,
     public password: string
   ) {
   }

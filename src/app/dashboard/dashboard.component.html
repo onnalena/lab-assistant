@@ -1,12 +1,3 @@
-<!--<ul *ngIf="!isLogout">-->
-<!--  <li><a (click)="goToPage('Home')" [target]="'dashboard'">Home</a></li>-->
-<!--  <li><a [target]="'view-bookings'">Bookings</a></li>-->
-<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Users')">Users</a></li>-->
-<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Computer Labs')">Computer Labs</a></li>-->
-<!--  <li *ngIf="loggedInUser.userType === 'ADMIN'"><a (click)="goToPage('Computers')">Computers</a></li>-->
-<!--  <li style="float:right"><a (click)="goToPage('Logout')">Logout</a></li>-->
-<!--  <li style="float:right"><a (click)="goToPage('Profile')">Profile</a></li>-->
-<!--</ul>-->
 
 <div style="background: #ECECEC;padding:30px;">
   <div nz-row [nzGutter]="8">
@@ -16,37 +7,34 @@
           <p><b>Description:</b> {{lab.description}}</p>
           <p><b>Operating Hours:</b> {{lab.openingTime}} - {{lab.closingTime}}</p>
           <p></p>
-          <nz-row [nzGutter]="16">
-            <nz-col [nzSpan]="6">
-              <nz-statistic [nzValue]="(lab.numberOfComputers | number)!" [nzTitle]="'Total Computers'"></nz-statistic>
-            </nz-col>
-            <nz-col [nzSpan]="6">
+          <nz-row [nzGutter]="30">
+            <nz-col [nzSpan]="8">
               <nz-statistic [nzValue]="(lab.numberOfComputersAvailable | number: '1.0-2')!"
-                            [nzTitle]="'Available Computers'"></nz-statistic>
+                            [nzTitle]="'Available Computers - For next hour'" nzSuffix="%"></nz-statistic>
             </nz-col>
-            <nz-col [nzSpan]="6">
+            <nz-col [nzSpan]="8">
               <nz-statistic [nzValue]="(lab.numberOfComputersBooked | number: '1.0-2')!"
-                            [nzTitle]="'Booked Computers'"></nz-statistic>
+                            [nzTitle]="'Booked Computers - For next hour'" nzSuffix="%"></nz-statistic>
             </nz-col>
           </nz-row>
           <nz-divider></nz-divider>
-          <button nz-button nzType="primary" nzBlock (click)="showModal(lab.computerLabName)"
-                  [disabled]="validateIfLabIsAvailableForBooking(lab)">Book
-          </button>
+          <div *ngIf="user.userType === 'USER'">
+            <button nz-button nzType="primary" nzBlock (click)="showModal(lab.computerLabName)"
+                    [disabled]="validateIfLabIsAvailableForBooking(lab)">Book
+            </button>
+          </div>
         </nz-card>
       </nz-space>
     </div>
   </div>
 </div>
 
-<nz-modal [(nzVisible)]="isVisible" nzTitle="Get Time Slots" (nzOnCancel)="handleOk()"
-          [nzOkText]="'Get Available Time Slots'"
-          (nzOnOk)="getTimeSlots(selectedLab)">
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Get Time Slots">
   <ng-container *nzModalContent>
     <div class="example-container">
       <form [formGroup]="bookingFormGroup">
         <label>Select Booking Date</label>
-        <input type="date" class="form-control" formControlName="date"
+        <input type="date" class="form-control" formControlName="date" required
                [ngClass]="{'is-invalid': bookingFormGroup.controls['date'].touched && bookingFormGroup.controls['date'].errors}">
         <div *ngIf="bookingFormGroup.controls['date'].errors" class="invalid-feedback">
           <div *ngIf="bookingFormGroup.controls['date'].errors['required']">Please select a date!</div>
@@ -54,33 +42,47 @@
       </form>
     </div>
   </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleOk()">Cancel</button>
+    <button nz-button nzType="primary" (click)="getTimeSlots(selectedLab)" [disabled]="bookingFormGroup.controls['date'].invalid">Get Available Time Slots</button>
+  </div>
 </nz-modal>
 
-<nz-modal [(nzVisible)]="isBookingVisible" nzTitle="Book Computer" (nzOnCancel)="handleCancel()" [nzOkText]="'Book'"
-          (nzOnOk)="bookComputer()">
+<nz-modal [(nzVisible)]="isBookingVisible" nzTitle="Book Computer">
   <ng-container *nzModalContent>
     <div class="example-container">
       <form [formGroup]="bookingFormGroup">
         <div class="form-group">
-          <label>Select booking time</label>
-          <select formControlName="availableTime" class="form-control" [ngClass]="{'is-invalid': bookingFormGroup.controls['availableTime'].touched &&
+          <label>Booking time</label>
+          <select formControlName="availableTime" class="form-control" required
+                  [ngClass]="{'is-invalid': bookingFormGroup.controls['availableTime'].touched &&
                bookingFormGroup.controls['availableTime'].errors}">
+            <option value="">Choose time slot</option>
             <option [ngValue]="time" *ngFor="let time of timeSlots">{{time}}</option>
           </select>
           <div *ngIf=" bookingFormGroup.controls['availableTime'].touched && bookingFormGroup.controls['availableTime'].errors">
-            <div *ngIf="bookingFormGroup.controls['availableTime'].errors['required']" class="ant-form-item-explain-error">Please select a time slot!</div>
+            <div *ngIf="bookingFormGroup.controls['availableTime'].errors['required']" class="ant-form-item-explain-error">Booking time is required!</div>
           </div>
         </div>
         <div class="form-group">
           <label>Primary Contact</label>
-          <select formControlName="contactPreference" class="form-control">
-            <option value="">Choose Primary Contact</option>
+          <select formControlName="contactPreference" class="form-control" required
+                  [ngClass]="{'is-invalid': bookingFormGroup.controls['contactPreference'].touched &&
+               bookingFormGroup.controls['contactPreference'].errors}">
+            <option value="">Choose primary contact</option>
             <option *ngFor="let contact of primaryContactOption" [ngValue]="contact">{{contact}}</option>
           </select>
+          <div *ngIf=" bookingFormGroup.controls['contactPreference'].touched && bookingFormGroup.controls['contactPreference'].errors">
+            <div *ngIf="bookingFormGroup.controls['contactPreference'].errors['required']">Primary contact is required!</div>
+          </div>
         </div>
       </form>
     </div>
   </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+    <button nz-button nzType="primary" (click)="bookComputer()" [disabled]="bookingFormGroup.invalid">Book</button>
+  </div>
 </nz-modal>
 
 

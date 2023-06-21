@@ -6,75 +6,117 @@
 <nz-table #Table [nzData]="computers" [nzBordered]="true">
   <thead>
   <tr>
-    <th *ngFor="let column of computerColumns">{{column}}</th>
+    <th nzAlign="center" *ngFor="let column of computerColumns">{{column}}</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let data of Table.data">
-    <td>{{data.computerName}}</td>
-    <td>{{data.brandName}}</td>
-    <td>{{data.serialNumber}}</td>
-    <td>{{data.computerLab.computerLabName}}</td>
-    <td>
-      <a (click)="showEditModal()"><span nz-icon nzType="edit" nzTheme="fill"></span></a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="showConfirm(data)"><span nz-icon nzType="delete" nzTheme="fill"></span></a>
+    <td nzAlign="center">{{data.computerName}}</td>
+    <td nzAlign="center">{{data.brandName}}</td>
+    <td nzAlign="center">{{data.serialNumber}}</td>
+    <td nzAlign="center">{{data.computerLab === null ? 'NOT LINKED TO LAB' : data.computerLab.computerLabName}}</td>
+    <td nzAlign="center">
+      <div *ngIf="data.computerLab === null">
+        <a (click)="showEditModal(data)"><span nz-tooltip nzTooltipTitle="Edit"><span nz-icon nzType="edit" nzTheme="fill"></span></span></a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="showLinkComputerModal(data)"><span nz-tooltip nzTooltipTitle="Link Computer"><span nz-icon nzType="lock" nzTheme="fill"></span></span></a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="showConfirm(data)"><span nz-tooltip nzTooltipTitle="Remove"><span nz-icon nzType="delete" nzTheme="fill"></span></span></a>
+      </div>
+
+      <div *ngIf="data.computerLab !== null">
+        <a (click)="showEditModal(data)"><span nz-tooltip nzTooltipTitle="Edit"><span nz-icon nzType="edit" nzTheme="fill"></span></span></a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="unlinkComputer(data)"><span nz-tooltip nzTooltipTitle="Unlink Computer"><span nz-icon nzType="unlock" nzTheme="fill"></span></span></a>
+      </div>
     </td>
   </tr>
   </tbody>
 </nz-table>
-
-<nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Details" (nzOnCancel)="handleCancelEdit()" [nzOkText]="'Save'" (nzOnOk)="showConfirmEdit()">
+<nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Details">
   <div class="example-container">
     <ng-container *nzModalContent>
       <form [formGroup]="editComputerFormGroup">
-        <div>
+        <div class="form-group">
           <label>Computer Name</label>
           <input readonly type="text" class="form-control" formControlName="computerName" [(ngModel)]="selectedComputer.computerName">
         </div>
-        <div>
-          <label>Computer Lab</label>
-          <select formControlName="computerLabName" class="form-control">
-            <option [(ngModel)]="selectedComputer.computerLab.computerLabName"></option>
-            <option *ngFor="let lab of computerLabs">{{lab.computerLabName}}</option>
-          </select>
-        </div>
-        <div>
+        <div class="form-group">
           <label>Brand Name</label>
           <input type="text" class="form-control" formControlName="brandName" [(ngModel)]="selectedComputer.brandName">
         </div>
-        <div>
+        <div class="form-group">
           <label>Serial Number</label>
           <input type="text" class="form-control" formControlName="serialNum" [(ngModel)]="selectedComputer.serialNumber">
         </div>
       </form>
     </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="handleCancelEdit()">Cancel</button>
+      <button nz-button nzType="primary" (click)="showConfirmEdit(selectedComputer)" [disabled]="!isEditValid()">Save</button>
+    </div>
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isLinkComputer" nzTitle="Link Computer">
+  <div class="example-container">
+    <ng-container *nzModalContent>
+      <form [formGroup]="editComputerFormGroup">
+        <div class="form-group">
+          <label>Computer Lab</label>
+          <select formControlName="computerLabName" class="form-control">
+            <option value="">Choose computer lab</option>
+            <option *ngFor="let lab of computerLabs">{{lab.computerLabName}}</option>
+          </select>
+        </div>
+      </form>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="handleCancelLinkComputer()">Cancel</button>
+      <button nz-button nzType="primary" (click)="linkComputer(selectedComputer)" [disabled]="formControlE['computerLabName'].value === ''">Save</button>
+    </div>
   </div>
 </nz-modal>
 
-<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer" (nzOnCancel)="handleCancelAdd()" [nzOkText]="'Save'" (nzOnOk)="addComputer()">
+<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer">
   <ng-container *nzModalContent>
     <div class="example-container">
       <div>
         <form [formGroup]="addComputerFormGroup">
-          <div>
+          <div class="form-group">
             <label>Brand Name</label>
-            <input type="text" class="form-control" formControlName="brandName">
+            <input type="text" class="form-control" formControlName="brandName" required
+                   [ngClass]="{'is-invalid' : formControl['brandName'].touched && formControl['brandName'].errors}">
+            <div *ngIf="formControl['brandName'].errors" class="invalid-feedback">
+              <div *ngIf="formControl['brandName'].errors['required']">Brand Name is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Serial Number</label>
-            <input type="text" class="form-control" formControlName="serialNum">
+            <input type="text" class="form-control" formControlName="serialNum"
+                   [ngClass]="{'is-invalid' : formControl['serialNum'].touched && formControl['serialNum'].errors}">
+            <div *ngIf="formControl['serialNum'].errors" class="invalid-feedback">
+              <div *ngIf="formControl['serialNum'].errors['required']">Serial Number is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Computer Lab</label>
-            <select class="form-control" formControlName="computerLabName">
+            <select class="form-control" formControlName="computerLabName" required
+                    [ngClass]="{'is-invalid' : formControl['computerLabName'].touched && formControl['computerLabName'].errors}">
+              <option value="">Choose computer lab</option>
               <option *ngFor="let lab of computerLabs">{{lab.computerLabName}}</option>
             </select>
+            <div *ngIf="formControl['computerLabName'].errors" class="invalid-feedback">
+              <div *ngIf="formControl['computerLabName'].errors['required']">Computer Lab Name is required!</div>
+            </div>
           </div>
         </form>
       </div>
     </div>
   </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCancelAdd()">Cancel</button>
+    <button nz-button nzType="primary" (click)="addComputer()" [disabled]="addComputerFormGroup.invalid">Save</button>
+  </div>
 </nz-modal>
 
 

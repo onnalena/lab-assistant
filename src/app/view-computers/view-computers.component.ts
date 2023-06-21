@@ -20,33 +20,25 @@ import {UserContactOption} from "../model/enum/UserContactOption";
   styleUrls: ['./view-computers.component.css']
 })
 export class ViewComputersComponent implements OnInit {
-  isVisible = false;
   isEditVisible = false;
   isAddVisible = false;
+  isLinkComputer = false;
   public computerColumns: string[] = ['Computer Name','Brand Name','Serial Number','Computer Lab','Actions'];
   public editComputerFormGroup: FormGroup;
   public addComputerFormGroup: FormGroup;
-  public backendError = false;
-  public error = "";
-  public computers: Computer[] = [new Computer("PC 1", "Dell", "SM4X01",
-    new ComputerLab("Lab 2", "B20", "Library", "08:00", "17:00", 0, 0, 0))];
-
+  public computers: Computer[] = [];
   public computerLabs: ComputerLab[] = [];
-  public user = new User("21600000","Kopano","Rakodi","", UserStatus.ACTIVE,UserType.USER,
-    [new UserContact("","natasharakodi@gmail.com",ContactPreference.EMAIL, UserContactOption.SECONDARY),
-      new UserContact("","0648785074",ContactPreference.SMS, UserContactOption.PRIMARY)]);
 
-  public selectedComputer: Computer = new Computer("PC 1","Dell", "SM4X01",
-    new ComputerLab("Lab 2", "B20", "Library", "08:00", "17:00", 0, 0, 0));
+  public selectedComputer: Computer = new Computer("","", "",
+    new ComputerLab("", "", "", "", "", 0, 0, 0));
 
-  @Input() loggedInUser = this.user;
   constructor(private computerService: ComputerService, private computerLabService: ComputerLabService,
               private modal: NzModalService, private route: Router) {
     this.editComputerFormGroup = new FormBuilder().group({
       computerName: [''],
       brandName: ['', Validators.required],
       serialNum: ['', Validators.required],
-      computerLabName: ['', Validators.required]
+      computerLabName: ['']
     });
     this.addComputerFormGroup = new FormBuilder().group({
       brandName:['', Validators.required],
@@ -56,19 +48,10 @@ export class ViewComputersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.computerService.getAllComputers().subscribe(result => {
-      if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
-      }else {
-        this.computers = result;
-      }
-    });
-
+    this.getComputers();
     this.computerLabService.getComputerLabs().subscribe(result => {
       if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
+        this.err(result.error);
       }else {
         this.computerLabs = result;
       }
@@ -77,14 +60,32 @@ export class ViewComputersComponent implements OnInit {
   get formControl(): { [key: string]: AbstractControl } {
     return this.addComputerFormGroup.controls;
   }
+  get formControlE(): { [key: string]: AbstractControl } {
+    return this.editComputerFormGroup.controls;
+  }
 
+  getComputers(){
+    this.computerService.getAllComputers().subscribe(result => {
+      if(result instanceof ErrorModel){
+        this.err(result.error);
+      }else {
+        this.computers = result;
+      }
+    });
+  }
 
   //Open Dialogs
   showModal(): void {
     this.isAddVisible = true;
   }
-  showEditModal(): void {
+  showEditModal(data: Computer): void {
     this.isEditVisible = true;
+    this.selectedComputer = data;
+  }
+
+  showLinkComputerModal(computer: Computer){
+    this.isLinkComputer = true;
+this.selectedComputer = computer;
   }
   showConfirm(computer: Computer): void {
     this.modal.confirm({
@@ -97,13 +98,13 @@ export class ViewComputersComponent implements OnInit {
       nzOnCancel: () => console.log('Cancel')
     });
   }
-  showConfirmEdit(): void {
+  showConfirmEdit(computer: Computer): void {
     this.modal.confirm({
       nzTitle: '<i>Are you sure you want to save these changes?</i>',
       nzOkText: 'Yes',
       nzOkType: 'primary',
       nzCancelText: 'No',
-      nzOnOk: () => this.updateComputer(),
+      nzOnOk: () => this.updateComputer(computer),
       nzOnCancel: () => console.log('Cancel')
     });
   }
@@ -126,49 +127,42 @@ export class ViewComputersComponent implements OnInit {
   //Close Dialogs
   handleCancelAdd(): void {
     this.isAddVisible = false;
+    this.addComputerFormGroup.reset();
   }
   handleCancelEdit(): void {
     this.isEditVisible = false;
   }
-
+  handleCancelLinkComputer(): void {
+    this.isLinkComputer = false;
+  }
 
   //Processing
-  updateComputer(){
-    let updatedComputer = this.selectedComputer;
-
-    updatedComputer.computerName = this.editComputerFormGroup.controls['computerName'].value;
-    updatedComputer.brandName =  this.editComputerFormGroup.controls['brandName'].value;
-    updatedComputer.serialNumber = this.editComputerFormGroup.controls['serialNum'].value;
-
-    console.log(updatedComputer.computerLab)
-
-    if(this.editComputerFormGroup.controls['computerLabName'].value !== '') {
-      updatedComputer.computerLab = new ComputerLab(this.editComputerFormGroup.controls['computerLabName'].value,
-        "", "", "", "", 0, 0, 0);
+  isEditValid(){
+    if(this.formControlE['brandName'].touched){
+      return true;
     }
+    if(this.formControlE['serialNum'].touched){
+      return true;
+    }
+    return false;
+  }
+  updateComputer(updatedComputer: Computer){
+    updatedComputer.brandName = this.formControlE['brandName'].value;
+    updatedComputer.serialNumber = this.formControlE['serialNum'].value;
 
     console.log(updatedComputer);
 
     this.computerService.updateComputer(updatedComputer).subscribe(result => {
       if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
-        this.err(this.error);
+        return this.err(result.error);
       }else{
-        this.success("Successfully updated.");
-      }
-    });
-  }
-  removeComputer(computer: Computer) {
-    this.computerService.deleteComputer(computer).subscribe(result => {
-      if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
+        this.success("Successfully updated " + updatedComputer.computerName + ".");
+        this.getComputers();
       }
     });
   }
   addComputer(){
-    let response: any;
+    this.selectedComputer.computerName = "";
     this.selectedComputer.brandName = this.formControl['brandName'].value;
     this.selectedComputer.serialNumber = this.formControl['serialNum'].value;
     this.selectedComputer.computerLab.computerLabName = this.formControl['computerLabName'].value;
@@ -177,12 +171,44 @@ export class ViewComputersComponent implements OnInit {
 
     this.computerService.addComputer(this.selectedComputer).subscribe(result => {
       if(result instanceof ErrorModel){
-        this.backendError = true;
-        this.error = result.error;
+        return this.err(result.error);
       }else{
-        this.route.navigateByUrl("/view-computers");
-        response = result;
-        console.log(response);
+        this.success("Successfully added computer.");
+        this.getComputers();
+      }
+    });
+  }
+  removeComputer(computer: Computer) {
+    this.computerService.deleteComputer(computer).subscribe(result => {
+      if(result instanceof ErrorModel){
+        return this.err(result.error);
+      }else {
+        this.success(computer.computerName + " was successfully removed.");
+this.getComputers();
+      }
+    });
+  }
+  unlinkComputer(computer: Computer){
+	console.log(computer);
+    this.computerService.unlinkComputer(computer.computerName).subscribe(result => {
+      if(result instanceof ErrorModel){
+        this.err(result.error);
+      }else{
+        this.success("Successfully removed computer from " + computer.computerLab.computerLabName + ".");
+        this.getComputers();
+      }
+    });
+  }
+
+  linkComputer(computer: Computer){
+computer.computerLab = new ComputerLab(this.formControlE['computerLabName'].value,"","","","",0,0,0);
+console.log(computer);
+    this.computerService.linkComputer(computer).subscribe(result => {
+      if(result instanceof ErrorModel){
+        this.err(result.error);
+      }else{
+        this.success("Successfully added computer to " + computer.computerLab.computerLabName + ".");
+        this.getComputers();
       }
     });
   }

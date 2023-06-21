@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../model/User";
 import {UserService} from "../service/User.service";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -10,6 +10,7 @@ import Validation from "../Validation";
 import {UserStatus} from "../model/enum/UserStatus";
 import {UserType} from "../model/enum/UserType";
 import {NzModalService} from "ng-zorro-antd/modal";
+import {NzMessageService} from "ng-zorro-antd/message";
 
 @Component({
   selector: 'app-view-users',
@@ -19,30 +20,26 @@ import {NzModalService} from "ng-zorro-antd/modal";
 export class ViewUsersComponent implements OnInit {
   public userColumns: string[] = ['ID Number', 'First Name', 'Last Name', 'Email', 'Cellphone Number', 'Contact Preference',
     'Status', 'User Type','Actions'];
-  public user = new User("21600000", "Kopano", "Rakodi", "", UserStatus.ACTIVE, UserType.ADMIN,
+  public user = new User("", "", "", "", UserStatus.ACTIVE, UserType.ADMIN,
     [new UserContact("", "natasharakodi@gmail.com", ContactPreference.EMAIL, UserContactOption.PRIMARY),
-      new UserContact("", "0648785074", ContactPreference.SMS, UserContactOption.SECONDARY)]);
+      new UserContact("", "0729785442", ContactPreference.SMS, UserContactOption.SECONDARY)]);
   public userRegistrationFormGroup: FormGroup;
-  public oneTimePinFormGroup: FormGroup;
   public editProfileFormGroup: FormGroup;
   public userRegistration: User;
-  public users: User[] = [this.user];
+  public users: User[] = [];
   public userContactEmail: UserContact;
   public userContactCellPhoneNumber: UserContact;
   public primaryContactOption: ContactPreference[] = [];
-  public error = "";
-  public IDNumber = "";
   public userTypeOptions = [UserType.USER, UserType.ADMIN];
-  isVisible = false;
   isEditVisible = false;
+  originalContactEmail? = "";
+  originalContactNumber? = "";
   isAddVisible = false;
-  isOTPVisible = false;
   public selectedUser = this.user;
-  @Input() loggedInUser = this.user;
 
-  constructor(private userService: UserService, private modal: NzModalService) {
+  constructor(private userService: UserService, private modal: NzModalService, private message: NzMessageService) {
     this.userRegistrationFormGroup = new FormBuilder().group({
-      IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(10)]],
+      IDNumber: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.maxLength(13), Validators.minLength(13)]],
       firstname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
       lastname: ['', [Validators.required, Validators.pattern('[a-zA-Z]+'), Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
@@ -52,38 +49,33 @@ export class ViewUsersComponent implements OnInit {
       userType: ['', Validators.required],
       primaryContact: ['', Validators.required]
     }, {
-      validators: [Validation.match('password', 'confirmPassword'),
-        Validation.match('email', 'confirmEmail'),
+      validators: [Validation.match('email', 'confirmEmail'),
         Validation.match('cellPhoneNumber', 'confirmCellPhoneNumber')]
     });
 
-    this.userContactEmail = new UserContact("216153804", "natasharakodi@gmail.com",
+    this.userContactEmail = new UserContact("", "",
       ContactPreference.EMAIL, UserContactOption.PRIMARY);
 
-    this.userContactCellPhoneNumber = new UserContact("216153804", "0648185074",
+    this.userContactCellPhoneNumber = new UserContact("", "",
       ContactPreference.SMS, UserContactOption.SECONDARY);
 
-    this.userRegistration = new User("216153804", "Onalenna", "Rakodi",
+    this.userRegistration = new User("", "", "",
       "", UserStatus.INACTIVE, UserType.USER, [this.userContactEmail, this.userContactCellPhoneNumber]);
 
     this.editProfileFormGroup = new FormBuilder().group({
       email: ['', Validators.email],
-      cellPhoneNumber: ['', [Validators.pattern('[0-9]+'),
-        Validators.minLength(10), Validators.maxLength(10)]],
-      primaryContact: ['']
+      confirmEmail: ['', Validators.email],
+      cellPhoneNumber: ['', [Validators.pattern('[0-9]+'), Validators.minLength(10), Validators.maxLength(10)]],
+      confirmCellPhoneNumber: ['', [Validators.pattern('[0-9]+'), Validators.minLength(10), Validators.maxLength(10)]]
+    }, {
+      validators: [Validation.match('email', 'confirmEmail'),
+        Validation.match('cellPhoneNumber', 'confirmCellPhoneNumber')]
     });
 
-    this.oneTimePinFormGroup = new FormBuilder().group({
-      oneTimePin: ['', Validators.required]
-    });
   }
 
   ngOnInit(): void {
-    this.userService.getAllUsers().subscribe(result => {
-      this.users = result;
-      console.log(result);
-    });
-
+    this.getUsers();
     let userContact = this.user.userContacts.find(z => z.status === UserContactOption.PRIMARY);
     if (userContact !== undefined) {
       this.primaryContactOption.push(userContact.contactPreference);
@@ -93,45 +85,60 @@ export class ViewUsersComponent implements OnInit {
       }
     }
   }
+
+  getUsers(){
+    this.userService.getAllUsers().subscribe(result => {
+      this.users = result;
+    });
+  }
   get formControl(): { [key: string]: AbstractControl } {
     return this.userRegistrationFormGroup.controls;
-  }
-  get formControlO(): { [key: string]: AbstractControl } {
-    return this.oneTimePinFormGroup.controls;
   }
   get formControlE(): { [key: string]: AbstractControl } {
     return this.editProfileFormGroup.controls;
   }
 
+
   //Open Dialogs
-  showModal(): void {
-    this.isVisible = true;
-  }
-  showEditModal(): void {
+  showEditModal(data: User): void {
     this.isEditVisible = true;
+    this.selectedUser = data;
+    this.originalContactEmail = this.selectedUser.userContacts.find(x => x.contactPreference === ContactPreference.EMAIL)?.contact;
+    this.originalContactNumber = this.selectedUser.userContacts.find(x => x.contactPreference === ContactPreference.SMS)?.contact;
   }
   showAddModal(): void {
     this.isAddVisible = true;
   }
-  showConfirmDelete(user: User): void {
-    this.modal.confirm({
-      nzTitle: '<i>Are you sure you want to delete this user?</i>',
-      nzOkText: 'Yes',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzCancelText: 'No',
-      nzOnOk: () => this.removeUser(user),
-      nzOnCancel: () => console.log('Cancel')
-    });
-  }
 
-  showConfirmEdit(): void {
+  showConfirmEdit(user: User): void {
     this.modal.confirm({
       nzTitle: '<i>Are you sure you want to save these changes?</i>',
       nzOkText: 'Yes',
       nzOkType: 'primary',
       nzCancelText: 'No',
-      nzOnOk: () => this.editUser(),
+      nzOnOk: () => this.editUser(user),
+      nzOnCancel: () => console.log('Cancel')
+    });
+  }
+  showConfirmDeactivation(user: User): void {
+    console.log(user);
+    this.modal.confirm({
+      nzTitle: '<i>Are you sure you want to deactivate user?</i>',
+      nzOkText: 'Yes',
+      nzOkType: 'primary',
+      nzCancelText: 'No',
+      nzOnOk: () => this.deactivateUser(user),
+      nzOnCancel: () => console.log('Cancel')
+    });
+  }
+  showConfirmReactivation(user: User): void {
+    console.log(user);
+    this.modal.confirm({
+      nzTitle: '<i>Are you sure you want to reactivate user?</i>',
+      nzOkText: 'Yes',
+      nzOkType: 'primary',
+      nzCancelText: 'No',
+      nzOnOk: () => this.reactivateUser(user),
       nzOnCancel: () => console.log('Cancel')
     });
   }
@@ -152,120 +159,93 @@ export class ViewUsersComponent implements OnInit {
   }
 
   //Close Dialogs
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.isVisible = false;
-  }
   handleCancelAdd(): void {
     this.isAddVisible = false;
-  }
-  handleCancelOTP(): void {
-    this.isOTPVisible = false;
+    this.userRegistrationFormGroup.reset()
   }
   handleCancelEdit(): void {
     this.isEditVisible = false;
+    this.getUsers();
   }
 
   //Processing
   regAdminUser(): void {
-    let userContacts = [];
-    this.IDNumber = this.formControl["IDNumber"].value;
+    let userContacts: UserContact[] = [];
+    let IDNumber = this.formControl["IDNumber"].value;
     let email = this.formControl["email"].value;
     let cellPhoneNumber = this.formControl["cellPhoneNumber"].value;
 
     if (this.formControl['primaryContact'].value === ContactPreference.EMAIL) {
-      this.userContactEmail = new UserContact(this.IDNumber, email, ContactPreference.EMAIL, UserContactOption.PRIMARY);
-      this.userContactCellPhoneNumber = new UserContact(this.IDNumber, cellPhoneNumber, ContactPreference.SMS,
+      this.userContactEmail = new UserContact(IDNumber, email, ContactPreference.EMAIL, UserContactOption.PRIMARY);
+      this.userContactCellPhoneNumber = new UserContact(IDNumber, cellPhoneNumber, ContactPreference.SMS,
         UserContactOption.SECONDARY);
     } else {
-      this.userContactCellPhoneNumber = new UserContact(this.IDNumber, cellPhoneNumber, ContactPreference.SMS,
+      this.userContactCellPhoneNumber = new UserContact(IDNumber, cellPhoneNumber, ContactPreference.SMS,
         UserContactOption.PRIMARY);
-      this.userContactEmail = new UserContact(this.IDNumber, email, ContactPreference.EMAIL,
+      this.userContactEmail = new UserContact(IDNumber, email, ContactPreference.EMAIL,
         UserContactOption.SECONDARY);
     }
 
     userContacts.push(this.userContactEmail, this.userContactCellPhoneNumber);
 
-    this.userRegistration.idnumber = this.IDNumber;
+    this.userRegistration.idnumber = IDNumber;
     this.userRegistration.firstname = this.formControl["firstname"].value;
     this.userRegistration.lastname = this.formControl["lastname"].value;
     this.userRegistration.userContacts = userContacts;
     this.userRegistration.userType = this.formControl["userType"].value;
 
     console.log(this.userRegistration);
+    this.users.push(this.userRegistration);
 
     this.userService.addAdmin(this.userRegistration).subscribe(result => {
       if (result instanceof ErrorModel) {
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else {
-        this.userRegistration = result;
-        this.success("Successfully added user.");
-        console.log(this.userRegistration);
+        this.success("Successfully added user - " + this.userRegistration.idnumber + ". A temporary login password will be sent to the user.");
+        this.getUsers();
       }
     });
   }
-  editUser() {
-    let userContactEmail = this.userRegistration.userContacts.find(x => x.contactPreference === ContactPreference.EMAIL);
-    let userContactNumber = this.userRegistration.userContacts.find(x => x.contactPreference === ContactPreference.SMS);
+  editUser(updatedUser: User) {
+    let userContactEmail = updatedUser.userContacts.find(x => x.contactPreference === ContactPreference.EMAIL);
+    let userContactNumber = updatedUser.userContacts.find(x => x.contactPreference === ContactPreference.SMS);
     let newContacts = [];
 
-    if(this.formControlE['primaryContact'].value !== ''){
-      let selectedPrimaryContact = this.formControlE['primaryContact'].value.trim();
-
-      if(userContactEmail !== undefined && userContactNumber !== undefined){
-        if(selectedPrimaryContact === ContactPreference.EMAIL){
-          console.log("Selected primary contact == " + selectedPrimaryContact);
-          userContactEmail.status = UserContactOption.PRIMARY;
-          userContactNumber.status = UserContactOption.SECONDARY;
-        }else{
-          console.log("Selected primary contact == " + selectedPrimaryContact);
-          userContactNumber.status = UserContactOption.PRIMARY;
-          userContactEmail.status = UserContactOption.SECONDARY;
-        }
-
-        newContacts.push(userContactNumber,userContactEmail);
-        this.userRegistration.userContacts = newContacts;
-        console.log(this.userRegistration.userContacts);
-      }
-    }else {
-      if (userContactEmail !== undefined && userContactNumber !== undefined) {
-        newContacts.push(userContactNumber, userContactEmail);
-        this.userRegistration.userContacts = newContacts;
-        console.log(this.userRegistration.userContacts);
-      }
+    if (userContactEmail !== undefined && userContactNumber !== undefined) {
+      newContacts.push(userContactNumber, userContactEmail);
+      updatedUser.userContacts = newContacts;
+      console.log(updatedUser.userContacts);
     }
 
-    this.userService.updateUser(this.userRegistration).subscribe(result => {
+    this.userService.adminUpdateUser(updatedUser).subscribe(result => {
       if(result instanceof ErrorModel){
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       }else{
-        this.success("Successfully updated.");
-        this.isOTPVisible = true;
+        this.success("Successfully updated user - " + updatedUser.idnumber + ".");
+        this.getUsers();
       }
     });
 
   }
-  otpSubmit(): void {
-    console.log(this.formControlO['oneTimePin'].value);
-    this.userService.verifyUser(this.formControlO['oneTimePin'].value, this.user.idnumber).subscribe(result => {
+  deactivateUser(user: User) {
+    console.log(user);
+    this.userService.deactivateUser(user.idnumber).subscribe(result => {
       if (result instanceof ErrorModel) {
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else {
-        this.success("Successfully verified.");
+        this.success("Successfully deactivated user - " + user.idnumber + ".");
+        this.users = result;
       }
     });
   }
-  removeUser(user: User) {
-    this.userService.deleteUser(user).subscribe(result => {
+  reactivateUser(user: User) {
+    console.log(user);
+    this.userService.reactivateUser(user.idnumber).subscribe(result => {
       if (result instanceof ErrorModel) {
-        this.error = result.error;
-        this.err(this.error);
+        this.err(result.error);
       } else {
-        this.success("Successfully removed.");
-        window.location.reload();
+        this.success("Successfully reactivated user - " + user.idnumber + ". A temporary login password will be sent to the user.");
+        this.getUsers();
       }
     });
   }

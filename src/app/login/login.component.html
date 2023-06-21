@@ -1,38 +1,47 @@
-<nz-layout *ngIf="!isReg">
-  <nz-header></nz-header>
-</nz-layout>
-<div class="example-container" *ngIf="!isLogin && !isReg">
-  <div class="form-container">
-    <h1>Login</h1>
-    <form nz-form [formGroup]="loginFormGroup">
-      <div class="form-group">
-        <label>RSA ID Number</label>
-        <input type="text" nz-input class="form-control" formControlName="IDNumber"
-               [ngClass]="{'is-invalid': loginFormGroup.controls['IDNumber'].touched && loginFormGroup.controls['IDNumber'].errors}">
-        <div *ngIf="loginFormGroup.controls['IDNumber'].errors" class="invalid-feedback">
-          <div *ngIf="loginFormGroup.controls['IDNumber'].errors['required']">Identity Number required!</div>
-          <div *ngIf="loginFormGroup.controls['IDNumber'].errors['maxlength'] ||loginFormGroup.controls['IDNumber'].errors['minlength']">Identity Number should be 13 digits long!</div>
+<div *ngIf="!isLogin && !isReg && !isReset">
+  <nz-layout>
+    <nz-header>
+      <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu" style="margin-left: 88.5%">
+        <li nz-menu-item><span style="font-size: 22px;"></span> <span></span></li>
+
+        <li nz-menu-item (click)="goToReg()"><span nz-icon nzType="form" nzTheme="outline"
+                                                   style="font-size: 22px;"></span> <span></span><span></span> Sign Up
+        </li>
+      </ul>
+    </nz-header>
+  </nz-layout>
+  <div class="example-container">
+    <div class="form-container">
+      <h1>Login</h1>
+      <form nz-form [formGroup]="loginFormGroup">
+        <div class="form-group">
+          <label>RSA ID Number</label>
+          <input type="text" nz-input class="form-control" formControlName="IDNumber" required
+                 [ngClass]="{'is-invalid': loginFormGroup.controls['IDNumber'].touched && loginFormGroup.controls['IDNumber'].errors}">
+          <div *ngIf="loginFormGroup.controls['IDNumber'].errors" class="invalid-feedback">
+            <div *ngIf="loginFormGroup.controls['IDNumber'].errors['required']">RSA ID Number is required!</div>
+            <div *ngIf="loginFormGroup.controls['IDNumber'].errors['maxlength'] || loginFormGroup.controls['IDNumber'].errors['minlength']">RSA ID Number is invalid!</div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" nz-input class="form-control" formControlName="password"
-               [ngClass]="{'is-invalid': loginFormGroup.controls['password'].touched && loginFormGroup.controls['password'].errors}">
-        <div *ngIf="loginFormGroup.controls['password'].errors" class="invalid-feedback">
-          <div *ngIf="loginFormGroup.controls['password'].errors['required']">Password is required!</div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" nz-input class="form-control" formControlName="password" required
+                 [ngClass]="{'is-invalid': loginFormGroup.controls['password'].touched && loginFormGroup.controls['password'].errors}">
+          <div *ngIf="loginFormGroup.controls['password'].errors" class="invalid-feedback">
+            <div *ngIf="loginFormGroup.controls['password'].errors['required']">Password is required!</div>
+          </div>
         </div>
-      </div>
-      <button style="margin-right: 20%;margin-bottom: 12px;" nz-button nzType="primary" (click)="logIn()">Sign In</button>
-      <button style="margin-right: 1%;margin-bottom: 12px;" nz-button nzType="primary" (click)="goToReg()">Register</button>
-      <button nz-button nzType="default" (click)="showForgotModal()">Forgot Password?</button>
-    </form>
+        <button nz-button nzType="primary" (click)="logIn()" [disabled]="loginFormGroup.invalid">Sign In</button>
+        <button nz-button nzType="link" (click)="showForgotModal()">Forgot Password?</button>
+      </form>
+    </div>
   </div>
+  <nz-layout class="layout">
+    <div>
+      <nz-footer>Lab Assistant©2023</nz-footer>
+    </div>
+  </nz-layout>
 </div>
-<nz-layout class="layout" *ngIf="!isReg">
-  <div>
-    <nz-footer>Lab Assistant©2023</nz-footer>
-  </div>
-</nz-layout>
 
 <nz-modal [(nzVisible)]="isForgotVisible" nzTitle="Forgot Password" (nzOnCancel)="handleOk()" [nzOkText]="'Send Token'"
           (nzOnOk)="passwordReset()">
@@ -40,20 +49,44 @@
     <div class="example-container">
       <form [formGroup]="forgotPasswordFormGroup">
         <label>Please enter your ID Number to reset your password: </label>
-        <input type="text" class="form-control" formControlName="IDNumber"
+        <input type="text" class="form-control" formControlName="IDNumber" required
                [ngClass]="{'is-invalid' : forgotPasswordFormGroup.controls['IDNumber'].touched &&
                    forgotPasswordFormGroup.controls['IDNumber'].errors}">
         <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors" class="invalid-feedback">
-          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['required']">ID Number is required!</div>
-          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['pattern']">ID Number contains characters!</div>
-          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['maxlength']">ID Number should contain 10 digits!</div>
+          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['required']">RSA ID Number is required!</div>
+          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['pattern']">RSA ID Number must contain only digits!</div>
+          <div *ngIf="forgotPasswordFormGroup.controls['IDNumber'].errors['maxlength'] ||
+          forgotPasswordFormGroup.controls['IDNumber'].errors['minlength']">RSA ID Number is invalid!</div>
         </div>
       </form>
     </div>
   </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleOk()">Cancel</button>
+    <button nz-button nzType="primary" (click)="passwordReset()" [disabled]="forgotPasswordFormGroup.invalid">Send Token</button>
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isInactive" nzTitle="Inactive Account" (nzOnCancel)="handleOk()">
+  <ng-container *nzModalContent>
+    <div class="example-container">
+      <form [formGroup]="inactiveFormGroup">
+        <label>Enter your OTP</label>
+        <input type="text" class="form-control" formControlName="otp" required
+               [ngClass]="{'is-invalid' : inactiveFormGroup.controls['otp'].touched &&
+                   inactiveFormGroup.controls['otp'].errors}">
+        <div *ngIf="inactiveFormGroup.controls['otp'].errors" class="invalid-feedback">
+          <div *ngIf="inactiveFormGroup.controls['otp'].errors['required']">OTP is required!</div>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+    <button nz-button nzType="primary" (click)="verifyOTP()" [disabled]="inactiveFormGroup.invalid">Verify OTP</button>
+  </div>
 </nz-modal>
 
 <app-layout *ngIf="isLogin" [loggedInUser]="loginResponse.user"></app-layout>
-<app-update-password *ngIf="isReset" [IDNumber]="loginResponse.user.idnumber"></app-update-password>
+<app-update-password *ngIf="isReset" [loggedInUser]="loginResponse.user"></app-update-password>
 <app-user-registration *ngIf="isReg"></app-user-registration>
 

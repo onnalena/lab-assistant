@@ -38,6 +38,7 @@ import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzMenuModule} from "ng-zorro-antd/menu";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {NzToolTipModule} from "ng-zorro-antd/tooltip";
+import {NzMessageModule} from "ng-zorro-antd/message";
 import { ViewFeedbackComponent } from './view-feedback/view-feedback.component';
 
 registerLocaleData(en);
@@ -83,7 +84,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     NzButtonModule,
     NzMenuModule,
     BrowserAnimationsModule,
-    NzToolTipModule
+    NzToolTipModule,
+    NzMessageModule
   ],
   providers: [UserService, { provide: NZ_I18N, useValue: en_US }, { provide: NZ_ICONS, useValue: icons }, { provide: OverlayContainer, useClass: FullscreenOverlayContainer}],
   bootstrap: [AppComponent]

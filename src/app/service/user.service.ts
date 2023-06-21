@@ -47,9 +47,14 @@ export class UserService {
       catchError(err => this.handleError(err))
     );
   }
+  public verifyPassword(login: Login) : Observable<any>{
+    return this.http.post(environment.backendEndpoint + "user/verify-password", login).pipe(
+      catchError(err => this.handleError(err))
+    );
+  }
 
-  public getUserDetails(IDNumber: string):Observable<any>{
-    return this.http.get(environment.backendEndpoint + "user/get-user/" + IDNumber).pipe(
+  public adminUpdateUser(user: User):Observable<any>{
+    return this.http.put(environment.backendEndpoint + "user/admin-update-user/", user).pipe(
       catchError(err => this.handleError(err))
     );
   }
@@ -58,7 +63,7 @@ export class UserService {
     return this.http.get(environment.backendEndpoint + "user/get-all-users");
   }
 
-  public updateUserPassword(newPassword: NewPassword):Observable<any>{
+  public updateUserPassword(newPassword: any):Observable<any>{
     return this.http.put(environment.backendEndpoint + "user/update-password", newPassword).pipe(
       catchError(err => this.handleError(err))
     );
@@ -74,8 +79,14 @@ export class UserService {
       catchError(err => this.handleError(err))
     );
   }
-  public deleteUser(user: User): Observable<any>{
-    return this.http.put(environment.backendEndpoint + "user/delete-user", user).pipe(
+  public deactivateUser(IDNumber: string): Observable<any>{
+    return this.http.post(environment.backendEndpoint + "user/deactivate", IDNumber).pipe(
+      catchError(err => this.handleError(err))
+    );
+  }
+
+  public reactivateUser(IDNumber: string): Observable<any>{
+    return this.http.post(environment.backendEndpoint + "user/reactivate", IDNumber).pipe(
       catchError(err => this.handleError(err))
     );
   }

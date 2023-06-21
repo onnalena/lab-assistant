@@ -6,90 +6,113 @@
 <nz-table #Table [nzData]="computerLabs" [nzBordered]="true">
   <thead>
   <tr>
-    <th *ngFor="let column of computerLabColumns">{{column}}</th>
+    <th nzAlign="center" *ngFor="let column of computerLabColumns">{{column}}</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let data of Table.data">
-    <td>{{data.computerLabName}}</td>
-    <td>{{data.buildingName}}</td>
-    <td>{{data.description}}</td>
-    <td>{{data.openingTime}}</td>
-    <td>{{data.closingTime}}</td>
-    <td>
-      <a (click)="showEditModal()"><span nz-icon nzType="edit" nzTheme="fill"></span></a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="showConfirm(data.computerLabName)"><span nz-icon nzType="delete" nzTheme="fill"></span></a>
+    <td nzAlign="center">{{data.computerLabName}}</td>
+    <td nzAlign="center">{{data.buildingName}}</td>
+    <td nzAlign="center">{{data.description}}</td>
+    <td nzAlign="center">{{data.openingTime}}</td>
+    <td nzAlign="center">{{data.closingTime}}</td>
+    <td nzAlign="center">
+      <a (click)="showEditModal(data)"><span nz-tooltip nzTooltipTitle="Edit"><span nz-icon nzType="edit" nzTheme="fill"style="font-size: 22px;"></span></span></a>
     </td>
-    <nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Lab Details" [nzOkText]="'Save'"
-              (nzOnCancel)="handleCancelEdit()" (nzOnOk)="showConfirmEdit()">
-      <div class="example-container">
-        <ng-container *nzModalContent>
-          <form [formGroup]="editComputerLabFormGroup">
-            <div>
-              <label>Computer Lab</label>
-              <input readonly type="text" class="form-control" formControlName="computerLabName" [(ngModel)]="data.computerLabName">
-            </div>
-            <div>
-              <label>Building Name</label>
-              <input type="text" class="form-control" formControlName="buildingName" [(ngModel)]="data.buildingName">
-            </div>
-            <div>
-              <label>Description</label>
-              <select formControlName="description" class="form-control">
-                <option [value]="">{{data.description}}</option>
-                <option *ngFor="let desc of description">{{desc}}</option>
-              </select>
-            </div>
-            <div>
-              <label>Opening Time</label>
-              <input type="time" class="form-control" formControlName="openingTime">
-            </div>
-            <div>
-              <label>Closing Time</label>
-              <input type="time" class="form-control" formControlName="closingTime">
-            </div>
-            <div *ngIf="backendError" class="back-end-errors">
-              <div>{{error}}</div>
-            </div>
-          </form>
-        </ng-container>
-      </div>
-    </nz-modal>
   </tr>
   </tbody>
 </nz-table>
-<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer Lab" (nzOnCancel)="handleCancelAdd()" [nzOkText]="'Save'" (nzOnOk)="showConfirmAdd()">
+<nz-modal [(nzVisible)]="isEditVisible" nzTitle="Edit Computer Lab Details" [nzOkText]="'Save'"
+          (nzOnCancel)="handleCancelEdit()" (nzOnOk)="showConfirmEdit(computerLab)">
+  <div class="example-container">
+    <ng-container *nzModalContent>
+      <form [formGroup]="editComputerLabFormGroup">
+        <div>
+          <label>Computer Lab</label>
+          <input readonly type="text" class="form-control" formControlName="computerLabName" [(ngModel)]="computerLab.computerLabName">
+        </div>
+        <div>
+          <label>Building Name</label>
+          <input type="text" class="form-control" formControlName="buildingName" [(ngModel)]="computerLab.buildingName">
+        </div>
+        <div>
+          <label>Description</label>
+          <select formControlName="description" class="form-control">
+            <option value="">Choose description</option>
+            <option *ngFor="let desc of description">{{desc}}</option>
+          </select>
+        </div>
+        <div>
+          <label>Opening Time</label>
+          <input type="time" class="form-control" formControlName="openingTime" [(ngModel)]="computerLab.openingTime">
+        </div>
+        <div>
+          <label>Closing Time</label>
+          <input type="time" class="form-control" formControlName="closingTime" [(ngModel)]="computerLab.closingTime">
+        </div>
+      </form>
+    </ng-container>
+  </div>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCancelEdit()">Cancel</button>
+    <button nz-button nzType="primary" (click)="showConfirmEdit(computerLab)" [disabled]="!isEditValid()">Save</button>
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isAddVisible" nzTitle="Add Computer Lab" (nzOnCancel)="handleCancelAdd()" [nzOkText]="'Save'" (nzOnOk)="addLab()">
   <ng-container *nzModalContent>
     <div class="example-container">
       <div>
         <form [formGroup]="addComputerLabFormGroup">
-          <div>
+          <div class="form-group">
             <label>Computer Lab Name</label>
-            <input type="text" class="form-control" formControlName="computerLabName">
+            <input type="text" class="form-control" formControlName="computerLabName" required
+                   [ngClass]="{'is-invalid' : formControlA['computerLabName'].touched && formControlA['computerLabName'].errors}">
+            <div *ngIf="formControlA['computerLabName'].errors" class="invalid-feedback">
+            <div *ngIf="formControlA['computerLabName'].errors['required']">Computer Lab Name is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Building Name/Number</label>
-            <input type="text" class="form-control" formControlName="buildingName">
+            <input type="text" class="form-control" formControlName="buildingName" required
+                   [ngClass]="{'is-invalid' : formControlA['buildingName'].touched && formControlA['buildingName'].errors}">
+            <div *ngIf="formControlA['buildingName'].errors" class="invalid-feedback">
+            <div *ngIf="formControlA['buildingName'].errors['required']">Building Name is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Description</label>
-            <select formControlName="description" class="form-control">
+            <select formControlName="description" class="form-control" required
+                    [ngClass]="{'is-invalid' : formControlA['description'].touched && formControlA['description'].errors}">
               <option value="">Choose description</option>
               <option *ngFor="let desc of description">{{desc}}</option>
             </select>
+            <div *ngIf="formControlA['description'].errors" class="invalid-feedback">
+              <div *ngIf="formControlA['description'].errors['required']">Description is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Opening Time</label>
-            <input type="time" class="form-control" formControlName="openingTime">
+            <input type="time" class="form-control" formControlName="openingTime" required
+		      [ngClass]="{'is-invalid' : formControlA['openingTime'].touched && formControlA['openingTime'].errors}">
+            <div *ngIf="formControlA['openingTime'].errors" class="invalid-feedback">
+            <div *ngIf="formControlA['openingTime'].errors['required']">Opening Time is required!</div>
+            </div>
           </div>
-          <div>
+          <div class="form-group">
             <label>Closing Time</label>
-            <input type="time" class="form-control" formControlName="closingTime">
+            <input type="time" class="form-control" formControlName="closingTime" required
+		       [ngClass]="{'is-invalid' : formControlA['closingTime'].touched && formControlA['closingTime'].errors}">
+            <div *ngIf="formControlA['closingTime'].errors" class="invalid-feedback">
+            <div *ngIf="formControlA['closingTime'].errors['required']">Closing Time is required!</div>
+            </div>
           </div>
         </form>
       </div>
     </div>
   </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="handleCancelAdd()">Cancel</button>
+    <button nz-button nzType="primary" (click)="addLab()" [disabled]="addComputerLabFormGroup.invalid">Save</button>
+  </div>
 </nz-modal>
 
